@@ -1,0 +1,1 @@
+psql -U USER -d DATABASE -f FILE
