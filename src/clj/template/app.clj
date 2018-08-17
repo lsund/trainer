@@ -14,7 +14,7 @@
       (do
         (println ";; [App] Starting, attaching handler")
         (println ";; comp: " component)
-        (assoc component :handler (handler/new-handler app-config)))))
+        (assoc component :handler (handler/new-handler (merge app-config db))))))
 
   (stop [component]
     (println ";; [App] Stopping")
