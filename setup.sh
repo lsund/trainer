@@ -17,7 +17,3 @@ trash mui.zip mui-0.9.39
 
 echo -e "\n\n\n"
 
-echo "If you want this to work, you need to:"
-echo "1. Change the name 'template' to the name of your program,"
-echo "   everywhere in your project. I reccomend ag"
-echo "2. specify the database configuration under [:db :name]"

@@ -1,4 +1,4 @@
-{:server {:port 8080}
+{:server {:port 3000}
  :app {:styles ["/css/style.css" "/css/mui.css"]
        :javascripts ["/js/compiled/foo.js"]}
  :db {:name "foo"}}
