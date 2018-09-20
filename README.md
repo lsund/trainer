@@ -1,6 +1,6 @@
-# myblog
+# template
 
-This is a myblog for clojure web project based on stuartsierra/component
+This is a template for clojure web project based on stuartsierra/component
 
 # Setup
 

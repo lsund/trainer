@@ -1,6 +1,6 @@
-(defproject myblog "0.1.0-SNAPSHOT"
+(defproject template "0.1.0-SNAPSHOT"
   :description "TODO"
-  :url "https://github.com/lsund/myblog"
+  :url "https://github.com/lsund/template"
 
 
   :min-lein-version "2.7.0"
@@ -35,28 +35,28 @@
   :source-paths ["src/clj" "src/cljs"]
 
   :ring
-  {:handler myblog.core/new-handler}
+  {:handler template.core/new-handler}
 
   :main
-  myblog.main
+  template.main
 
   :cljsbuild {:builds
               [{:id           "dev"
                 :source-paths ["src/cljs"]
 
-                :figwheel {:on-jsload "myblog.core/on-js-reload"
+                :figwheel {:on-jsload "template.core/on-js-reload"
                            :open-urls ["http://localhost:3449/index.html"]}
 
-                :compiler {:main                 myblog.core
+                :compiler {:main                 template.core
                            :asset-path           "js/compiled/out"
-                           :output-to            "resources/public/js/compiled/myblog.js"
+                           :output-to            "resources/public/js/compiled/template.js"
                            :output-dir           "resources/public/js/compiled/out"
                            :source-map-timestamp true
                            :preloads             [devtools.preload]}}
                {:id           "min"
                 :source-paths ["src/cljs"]
-                :compiler     {:output-to     "resources/public/js/compiled/myblog.js"
-                               :main          myblog.core
+                :compiler     {:output-to     "resources/public/js/compiled/template.js"
+                               :main          template.core
                                :optimizations :advanced
                                :pretty-print  false}}]}
 
