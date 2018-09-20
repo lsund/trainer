@@ -17,3 +17,13 @@ trash mui.zip mui-0.9.39
 
 echo -e "\n\n\n"
 
+projectname=$(echo $(basename $(pwd)))
+
+echo "Renaming src/{clj,cljs}/template to $projectname"
+
+mv src/clj/template src/clj/$projectname
+mv src/cljs/template src/cljs/$projectname
+
+echo "Changing git remote url"
+
+sed -i -e "s/component-template.git/$projectname.git/" .git/config
