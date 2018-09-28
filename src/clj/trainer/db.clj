@@ -32,8 +32,14 @@
 (defn add-exercise [db name]
   (j/insert! db :exercise {:name name}))
 
-(defn all-exercises [db]
-  (j/query db ["select * from exercise"]))
+(defn all [db table]
+  (j/query db [(str "select * from " (name table))]))
+
+(defn tasks-for-plan [db plan-id]
+  (j/query db ["select * from task where planid=?" plan-id]))
+
+(defn id->exercise [db id]
+  (first (j/query db ["select * from exercise where id=?" id])))
 
 (defn add-plan [db name eids]
   (j/insert! db :plan {:name name})

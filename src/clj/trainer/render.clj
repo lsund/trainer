@@ -23,7 +23,7 @@
     [:h3 "Make a new plan"]
     (form-to [:post "/add-to-plan"]
              [:select {:name "exercise"}
-              (for [e (db/all-exercises db)]
+              (for [e (db/all db :exercise)]
                 [:option {:value (:id e)} (:name e)])]
              [:button.mui-btn "Add to plan"])
     [:h3 "Current plan"]
@@ -38,15 +38,15 @@
     (form-to [:post "/save-plan"]
              [:input {:name "name" :type :text :placeholder "Plan name"}]
              [:button.mui-btn "Save plan"])
-    #_[:h3 "Existing exercises"]
-    #_[:table
-       [:thead
-        [:tr
-         [:th "Name"]]]
-       [:tbody
-        (for [e (db/all-exercises db)]
-          [:tr
-           [:td (:name e)]])]]
+    [:h3 "Existing plans"]
+    [:ul
+     (for [p (db/all db :plan)]
+       [:li
+        [:div (:name p)]
+        [:div
+         [:ul
+          (for [t (db/tasks-for-plan db (:id p))]
+            [:li (:name (db/id->exercise db (:exerciseid t)))])]]])]
 
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))
