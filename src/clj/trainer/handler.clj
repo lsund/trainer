@@ -23,15 +23,15 @@
 (defn- app-routes
   [{:keys [db] :as config}]
   (routes
-   (GET "/" []
-        (render/index config))
+   (GET "/" {:keys [session]}
+        (render/index config (:exercise-list session)))
    (POST "/add-to-plan" {:keys [session params]}
          (let [exercises (:exercise-list session [])
                session (assoc session :exercise-list (conj exercises (:exercise params)))]
            (-> (redirect "/")
                (assoc :session session))))
    (POST "/save-plan" {:keys [session params]}
-         (println session)
+         (db/add-plan db (:name params) (map util/parse-int (:exercise-list session)))
          (-> (redirect "/")
              (assoc :session nil)))
    (POST "/add-exercise" [name]

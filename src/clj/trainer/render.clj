@@ -9,7 +9,7 @@
    [trainer.html :as html]))
 
 (defn index
-  [{:keys [db] :as config}]
+  [{:keys [db] :as config} exercise-list]
   (html5
    [:head
     [:title "Trainer"]]
@@ -18,16 +18,25 @@
     [:p "This is a program for logging your gym results."]
     [:h3 "Add Exercise"]
     (form-to [:post "/add-exercise"]
-             [:input
-              {:name "name" :type :text :placeholder "Exercise name"}]
+             [:input {:name "name" :type :text :placeholder "Exercise name"}]
              [:button.mui-btn "Add exercise"])
     [:h3 "Make a new plan"]
     (form-to [:post "/add-to-plan"]
              [:select {:name "exercise"}
               (for [e (db/all-exercises db)]
-                [:option {:value (:name e)} (:name e)])]
+                [:option {:value (:id e)} (:name e)])]
              [:button.mui-btn "Add to plan"])
+    [:h3 "Current plan"]
+    [:table
+     [:thead
+      [:tr
+       [:th "Name"]]]
+     [:tbody
+      (for [id exercise-list]
+        [:tr
+         [:td id]])]]
     (form-to [:post "/save-plan"]
+             [:input {:name "name" :type :text :placeholder "Plan name"}]
              [:button.mui-btn "Save plan"])
     #_[:h3 "Existing exercises"]
     #_[:table
