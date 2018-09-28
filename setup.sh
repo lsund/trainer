@@ -32,8 +32,17 @@ sed -i -e "s/component-template.git/$projectname.git/" .git/config
 
 echo "Changing port number to the lowest available"
 
+cp $PORTS_FILE $PORTS_FILE.old
 highest_portnum=$(cat $PORTS_FILE | tail -1 | cut -d':' -f1)
 new_portnum=$((highest_portnum + 1))
 
 sed -i -e "s/:port 1337/:port $new_portnum/" resources/edn/config.edn
 echo $new_portnum: $projectname >> $PORTS_FILE
+
+echo "Replacing the keyword template in all files"
+
+for file in $(ag template -l src/{clj,cljs} dev project.clj)
+do
+    echo "Replacing in: $file"
+    sed -i -e "s/template/$projectname/" $file
+done
