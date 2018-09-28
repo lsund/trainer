@@ -5,8 +5,9 @@
    [compojure.core :refer [routes GET POST ANY]]
 
 
-   [ring.util.response :refer [redirect]]
+   [ring.util.response :refer [redirect response]]
    [ring.middleware
+    [session]
     [defaults :refer [site-defaults wrap-defaults]]
     [keyword-params :refer [wrap-keyword-params]]
     [params :refer [wrap-params]]]
@@ -20,10 +21,22 @@
    [trainer.render :as render]))
 
 (defn- app-routes
-  [config]
+  [{:keys [db] :as config}]
   (routes
    (GET "/" []
         (render/index config))
+   (POST "/add-to-plan" {:keys [session params]}
+         (let [exercises (:exercise-list session [])
+               session (assoc session :exercise-list (conj exercises (:exercise params)))]
+           (-> (redirect "/")
+               (assoc :session session))))
+   (POST "/save-plan" {:keys [session params]}
+         (println session)
+         (-> (redirect "/")
+             (assoc :session nil)))
+   (POST "/add-exercise" [name]
+         (db/add-exercise db name)
+         (redirect "/"))
    (r/resources "/")
    (r/not-found render/not-found)))
 

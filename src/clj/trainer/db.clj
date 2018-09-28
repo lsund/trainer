@@ -28,3 +28,9 @@
 (defn new-db
   [config]
   (map->Db {:db-config config}))
+
+(defn add-exercise [db name]
+  (j/insert! db :exercise {:name name}))
+
+(defn all-exercises [db]
+  (j/query db ["select * from exercise"]))
