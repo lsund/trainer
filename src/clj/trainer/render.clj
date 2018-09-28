@@ -1,21 +1,21 @@
-(ns template.render
+(ns trainer.render
   "Namespace for rendering hiccup"
   (:require
-   [template.db :as db]
+   [trainer.db :as db]
    [taoensso.timbre :as logging]
    [hiccup.form :refer [form-to]]
    [hiccup.page :refer [html5 include-css include-js]]
-   [template.util :as util]
-   [template.html :as html]))
-
+   [trainer.util :as util]
+   [trainer.html :as html]))
 
 (defn index
   [config]
   (html5
    [:head
-    [:title "Fixme"]]
+    [:title "Trainer"]]
    [:body
-    [:h1 "Hello. Fixme"]
+    [:h1 "Trainer"]
+    [:p "This is a program for logging your gym results."]
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))
 

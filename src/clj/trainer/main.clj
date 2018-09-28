@@ -1,10 +1,10 @@
-(ns template.main
+(ns trainer.main
   "Namespace for running the program once"
   (:require
-   [template.config :as config]
+   [trainer.config :as config]
    [org.httpkit.server :refer [run-server]]
    [compojure.handler :refer [site]]
-   [template.handler :refer [new-handler]])
+   [trainer.handler :refer [new-handler]])
   (:gen-class))
 
 (defn -main [& args]

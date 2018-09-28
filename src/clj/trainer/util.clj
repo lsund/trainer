@@ -1,4 +1,4 @@
-(ns template.util
+(ns trainer.util
   "Namespace for utilities"
   (:require [clojure.string :as s]))
 

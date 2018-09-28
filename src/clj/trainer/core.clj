@@ -1,10 +1,10 @@
-(ns template.core
+(ns trainer.core
   "Namespace that defines the system of components."
   (:require
    [com.stuartsierra.component :as c]
-   [template.app :as app]
-   [template.server :as server]
-   [template.db :as db]))
+   [trainer.app :as app]
+   [trainer.server :as server]
+   [trainer.db :as db]))
 
 (defn new-system
   [config]

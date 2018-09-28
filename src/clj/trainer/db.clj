@@ -1,10 +1,10 @@
-(ns template.db
+(ns trainer.db
   "Namespace for database interfacing"
   (:require [clojure.java.jdbc :as j]
             [com.stuartsierra.component :as c]
             [taoensso.timbre :as timbre]
-            [template.util :as util]
-            [template.config :as config]))
+            [trainer.util :as util]
+            [trainer.config :as config]))
 
 
 (defn pg-db [config]

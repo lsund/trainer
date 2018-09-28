@@ -1,4 +1,4 @@
-{:server {:port 1337}
+{:server {:port 3005}
  :app {:styles ["/css/style.css" "/css/mui.css"]
        :javascripts ["/js/compiled/foo.js"]}
- :db {:name "foo"}}
+ :db {:name "trainer"}}

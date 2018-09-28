@@ -1,4 +1,4 @@
-(ns template.config
+(ns trainer.config
   "Namespace for loading configuration"
   (:require [clojure.edn :as edn]))
 

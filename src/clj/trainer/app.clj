@@ -1,9 +1,9 @@
-(ns template.app
+(ns trainer.app
   "Namespace for defining the application component"
   (:require
    [com.stuartsierra.component :as c]
    [compojure.handler :refer [site]]
-   [template.handler :as handler]))
+   [trainer.handler :as handler]))
 
 (defrecord App [handler app-config db]
   c/Lifecycle

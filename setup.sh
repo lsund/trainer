@@ -39,6 +39,9 @@ new_portnum=$((highest_portnum + 1))
 sed -i -e "s/:port 1337/:port $new_portnum/" resources/edn/config.edn
 echo $new_portnum: $projectname >> $PORTS_FILE
 
+echo "Configuring database name to $projectname"
+sed -i -e "s/:name \"foo\"/:name \"$trainer\"/" resources/edn/config.edn
+
 echo "Replacing the keyword template in all files"
 
 for file in $(ag template -l src/{clj,cljs} dev project.clj)

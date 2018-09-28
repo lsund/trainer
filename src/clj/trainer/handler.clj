@@ -1,4 +1,4 @@
-(ns template.handler
+(ns trainer.handler
   "Namespace for handling routes"
   (:require
    [compojure.route :as r]
@@ -15,10 +15,9 @@
    [taoensso.timbre :as logging]
    [taoensso.timbre.appenders.core :as appenders]
 
-   [template.db :as db]
-   [template.util :as util]
-   [template.render :as render]))
-
+   [trainer.db :as db]
+   [trainer.util :as util]
+   [trainer.render :as render]))
 
 (defn- app-routes
   [config]
