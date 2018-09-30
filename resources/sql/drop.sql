@@ -1,5 +1,6 @@
-drop TABLE CompletedWeightTask;
-drop TABLE CompletedCardioTask;
-drop TABLE Task;
+drop TABLE WeightTaskInstance;
+drop TABLE CardioTaskInstance;
+drop TABLE WeightTask;
+drop TABLE CardioTask;
 drop TABLE Exercise;
 drop TABLE Plan;

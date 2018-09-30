@@ -43,10 +43,14 @@
      (for [p (db/all db :plan)]
        [:li
         [:div (:name p)]
-        [:div
-         [:ul
+        [:table
+         [:thead
+          [:tr
+           [:th "Exercise"]]]
+         [:tbody
           (for [t (db/tasks-for-plan db (:id p))]
-            [:li (:name (db/id->exercise db (:exerciseid t)))])]]])]
+            [:tr
+             [:td (:name (db/id->exercise db (:exerciseid t)))]])]]])]
 
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))
