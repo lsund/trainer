@@ -29,8 +29,8 @@
   [config]
   (map->Db {:db-config config}))
 
-(defn add-exercise [db name]
-  (j/insert! db :exercise {:name name}))
+(defn add [db table row]
+  (partial j/insert!))
 
 (defn all [db table]
   (j/query db [(str "select * from " (name table))]))
@@ -45,8 +45,5 @@
   (j/insert! db :plan {:name name})
   (let [plan (first (j/query db ["select * from plan where name=?" name]))]
     (doseq [eid eids]
-      (add-task db (:id plan) eid))))
-
-(defn add-task [db plan-id exercise-id]
-  (j/insert! db :task {:planid plan-id
-                       :exerciseid exercise-id}))
+      (add db :task {:planid (:id plan)
+                     :exercisid eid}))))

@@ -35,7 +35,7 @@
          (-> (redirect "/")
              (assoc :session nil)))
    (POST "/add-exercise" [name]
-         (db/add-exercise db name)
+         (db/add db :exercise {:name name})
          (redirect "/"))
    (r/resources "/")
    (r/not-found render/not-found)))
