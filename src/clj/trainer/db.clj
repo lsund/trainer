@@ -32,6 +32,12 @@
 (defn add [db table row]
   (partial j/insert!))
 
+(defn add-plan [db name eids]
+  (j/insert! db :plan {:name name})
+  (let [plan (first (j/query db ["select * from plan where name=?" name]))]
+    (doseq [eid eids]
+      (add db :task {:planid (:id plan)
+                     :exercisid eid}))))
 (defn all [db table]
   (j/query db [(str "select * from " (name table))]))
 
@@ -40,10 +46,3 @@
 
 (defn id->exercise [db id]
   (first (j/query db ["select * from exercise where id=?" id])))
-
-(defn add-plan [db name eids]
-  (j/insert! db :plan {:name name})
-  (let [plan (first (j/query db ["select * from plan where name=?" name]))]
-    (doseq [eid eids]
-      (add db :task {:planid (:id plan)
-                     :exercisid eid}))))

@@ -8,6 +8,9 @@
    [trainer.util :as util]
    [trainer.html :as html]))
 
+(defn id->exercise-name [db id]
+  (->> id util/parse-int (db/id->exercise db) :name))
+
 (defn index
   [{:keys [db] :as config} exercise-list]
   (html5
@@ -34,7 +37,7 @@
      [:tbody
       (for [id exercise-list]
         [:tr
-         [:td id]])]]
+         [:td (id->exercise-name db id)]])]]
     (form-to [:post "/save-plan"]
              [:input {:name "name" :type :text :placeholder "Plan name"}]
              [:button.mui-btn "Save plan"])
@@ -50,7 +53,7 @@
          [:tbody
           (for [t (db/tasks-for-plan db (:id p))]
             [:tr
-             [:td (:name (db/id->exercise db (:exerciseid t)))]])]]])]
+             [:td (id->exercise-name db (:exerciseid t))]])]]])]
 
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))

@@ -4,7 +4,11 @@
 
 (defn stringify [k] (-> k name s/capitalize))
 
-(defn parse-int [s] (Integer. (re-find  #"\d+" s)))
+(defn parse-int [x]
+  (cond
+    (= (type x) java.lang.Integer) x
+    (= (type x) java.lang.String) (Integer. (re-find #"\d+" x))
+    :default (throw (IllegalArgumentException. (str "Cannot parse type: " (type x))))))
 
 (def date-string "yyyy-MM-dd")
 
