@@ -21,6 +21,7 @@
    [trainer.render :as render]))
 
 (defn process-exercise-property [[k v]]
+  (println k v)
   (let [[id prop & _] (string/split k #"_")]
     {:id (util/parse-int id)
      :key (keyword prop)
@@ -32,13 +33,19 @@
          :id
          id))
 
-(defn save-plan-instance [db planid params]
-  (let [es
-        (for [[id props] (group-by :id (for [p (filter (fn [[k _]] (string? k)) params)]
+(defn is-exercise-property [[s _]]
+  (and (string? s)
+       (re-matches #"[0-9]+_.*" s)))
+
+(defn save-plan-instance [db params]
+  (let [planid (-> params :plan util/parse-int)
+        day (util/->localdate (:day params))
+        es
+        (for [[id props] (group-by :id (for [p (filter is-exercise-property params)]
                                          (process-exercise-property p)))]
           (make-exercise id props))]
     (doseq [e es]
-      (db/add db :doneexercise {:day (util/today)
+      (db/add db :doneexercise {:day day
                                 :planid planid
                                 :exerciseid (:id e)})
       (db/update db :exercise (select-keys e [:sets :reps :weight]) (:id e)))))
@@ -64,8 +71,7 @@
          (-> (redirect "/")
              (assoc :session nil)))
    (POST "/save-plan-instance" {:keys [params]}
-         (let [planid (util/parse-int (:plan params))]
-           (save-plan-instance db planid params))
+         (save-plan-instance db params)
          (-> (redirect "/")
              (assoc :session nil)))
    (GET "/complete-plan" [plan]

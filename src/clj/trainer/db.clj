@@ -43,8 +43,8 @@
 (defn all [db table]
   (j/query db [(str "select * from " (name table))]))
 
-(defn exercises-for-plan [db id]
-  (j/query db ["select * from planexercise where planid=?" id]))
+(defn exercise-ids-for-plan [db id]
+  (map :exerciseid (j/query db ["select exerciseid from planexercise where planid=?" id])))
 
 (defn update [db table update-map id]
   (j/update! db table update-map ["id=?" id]))

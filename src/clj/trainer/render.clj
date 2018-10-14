@@ -52,11 +52,18 @@
         [:table
          [:thead
           [:tr
-           [:th "Exercise"]]]
+           [:th "Exercise"]
+           [:th "Sets"]
+           [:th "Reps"]
+           [:th "Kg"]]]
          [:tbody
-          (for [t (db/exercises-for-plan db (:id p))]
-            [:tr
-             [:td (id->exercise-name db (:exerciseid t))]])]]])]
+          (for [eid (db/exercise-ids-for-plan db (:id p))]
+            (let [{:keys [name sets reps weight]} (db/get-row db :exercise eid)]
+              [:tr
+               [:td name]
+               [:td sets]
+               [:td reps]
+               [:td weight]]))]]])]
     [:h3 "Complete a plan"]
     (form-to [:get "/complete-plan"]
              [:select {:name "plan"}
@@ -73,6 +80,7 @@
    [:body
     (form-to [:post "/save-plan-instance"]
              [:input {:type :hidden :name "plan" :value id}]
+             [:input {:type :date :name "day"}]
              [:table
               [:thead
                [:tr
@@ -81,7 +89,7 @@
                 [:th "Reps"]
                 [:th "Kg"]]]
               [:tbody
-               (for [eid (map :exerciseid (db/exercises-for-plan db id))]
+               (for [eid (db/exercise-ids-for-plan db id)]
                  (let [e (db/get-row db :exercise eid)]
                    [:tr
                     [:td (:name e)]
