@@ -31,17 +31,20 @@
 (defn add [& args]
   (apply j/insert! args))
 
+(defn get-row [db table id]
+  (first (j/query db [(str "select * from " (name table) " where id=?") id])))
+
 (defn add-plan [db name eids]
   (j/insert! db :plan {:name name})
   (let [plan (first (j/query db ["select * from plan where name=?" name]))]
     (doseq [eid eids]
-      (add db :task {:planid (:id plan)
-                     :exercisid eid}))))
+      (add db :planexercise {:planid (:id plan)
+                             :exerciseid eid}))))
 (defn all [db table]
   (j/query db [(str "select * from " (name table))]))
 
-(defn tasks-for-plan [db plan-id]
-  (j/query db ["select * from task where planid=?" plan-id]))
+(defn exercises-for-plan [db id]
+  (j/query db ["select * from planexercise where planid=?" id]))
 
-(defn id->exercise [db id]
-  (first (j/query db ["select * from exercise where id=?" id])))
+(defn update [db table update-map id]
+  (j/update! db table update-map ["id=?" id]))

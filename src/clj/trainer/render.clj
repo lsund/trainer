@@ -9,7 +9,7 @@
    [trainer.html :as html]))
 
 (defn id->exercise-name [db id]
-  (->> id util/parse-int (db/id->exercise db) :name))
+  (->> id util/parse-int (db/get-row db :exercise) :name))
 
 (defn index
   [{:keys [db] :as config} exercise-list]
@@ -54,7 +54,7 @@
           [:tr
            [:th "Exercise"]]]
          [:tbody
-          (for [t (db/tasks-for-plan db (:id p))]
+          (for [t (db/exercises-for-plan db (:id p))]
             [:tr
              [:td (id->exercise-name db (:exerciseid t))]])]]])]
     [:h3 "Complete a plan"]
@@ -67,24 +67,36 @@
     (apply include-css (:styles config))]))
 
 (defn complete-plan [{:keys [db]} id]
-  (println id)
   (html5
    [:head
     [:title "Complete plan"]]
    [:body
-    [:table
-     [:thead
-      [:tr
-       [:th "Exercise"]
-       [:th "Sets"]
-       [:th "Reps"]
-       [:th "Kg"]]]
-     [:tbody
-      (for [t (db/tasks-for-plan db id)]
-        [:tr
-         [:td (id->exercise-name db (:exerciseid t))]
-         [:td "3"]
-         [:td "12"]
-         [:td "20"]])]]]))
+    (form-to [:post "/save-plan-instance"]
+             [:input {:type :hidden :name "plan" :value id}]
+             [:table
+              [:thead
+               [:tr
+                [:th "Exercise"]
+                [:th "Sets"]
+                [:th "Reps"]
+                [:th "Kg"]]]
+              [:tbody
+               (for [eid (map :exerciseid (db/exercises-for-plan db id))]
+                 (let [e (db/get-row db :exercise eid)]
+                   [:tr
+                    [:td (:name e)]
+                    [:td [:input {:name (str eid "_sets")
+                                  :type :number
+                                  :value (:sets e)
+                                  :min "0"}]]
+                    [:td [:input {:name (str eid "_reps")
+                                  :type :number
+                                  :value (:reps e)
+                                  :min "0"}]]
+                    [:td [:input {:name (str eid "_weight")
+                                  :type :number
+                                  :value (:weight e)
+                                  :min "0"}]]]))]]
+             [:input {:type :submit :value "Save plan"}])]))
 
 (def not-found (html5 "not found"))

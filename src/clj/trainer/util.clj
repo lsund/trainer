@@ -29,5 +29,6 @@
   (.format (java.time.format.DateTimeFormatter/ofPattern date-string)
            (->localdate d)))
 
+(defn today [] (java.time.LocalDateTime/now))
 
 (defn fmt-today [] (fmt-date (java.time.LocalDateTime/now)))

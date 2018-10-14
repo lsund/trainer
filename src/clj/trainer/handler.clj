@@ -3,7 +3,7 @@
   (:require
    [compojure.route :as r]
    [compojure.core :refer [routes GET POST ANY]]
-
+   [clojure.string :as string]
 
    [ring.util.response :refer [redirect response]]
    [ring.middleware
@@ -19,6 +19,29 @@
    [trainer.db :as db]
    [trainer.util :as util]
    [trainer.render :as render]))
+
+(defn process-exercise-property [[k v]]
+  (let [[id prop & _] (string/split k #"_")]
+    {:id (util/parse-int id)
+     :key (keyword prop)
+     :value (util/parse-int v)}))
+
+(defn make-exercise [id props]
+  (assoc (into {} (for [prop props]
+                    [(:key prop) (:value prop)]))
+         :id
+         id))
+
+(defn save-plan-instance [db planid params]
+  (let [es
+        (for [[id props] (group-by :id (for [p (filter (fn [[k _]] (string? k)) params)]
+                                         (process-exercise-property p)))]
+          (make-exercise id props))]
+    (doseq [e es]
+      (db/add db :doneexercise {:day (util/today)
+                                :planid planid
+                                :exerciseid (:id e)})
+      (db/update db :exercise (select-keys e [:sets :reps :weight]) (:id e)))))
 
 (defn- app-routes
   [{:keys [db] :as config}]
@@ -40,8 +63,13 @@
          (db/add-plan db (:name params) (map util/parse-int (:exercise-list session)))
          (-> (redirect "/")
              (assoc :session nil)))
+   (POST "/save-plan-instance" {:keys [params]}
+         (let [planid (util/parse-int (:plan params))]
+           (save-plan-instance db planid params))
+         (-> (redirect "/")
+             (assoc :session nil)))
    (GET "/complete-plan" [plan]
-         (render/complete-plan config (util/parse-int plan)))
+        (render/complete-plan config (util/parse-int plan)))
    (r/resources "/")
    (r/not-found render/not-found)))
 
