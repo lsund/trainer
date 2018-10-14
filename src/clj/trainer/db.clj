@@ -24,13 +24,12 @@
     (println ";; [Db] Stopping database")
     component))
 
-
 (defn new-db
   [config]
   (map->Db {:db-config config}))
 
-(defn add [db table row]
-  (partial j/insert!))
+(defn add [& args]
+  (apply j/insert! args))
 
 (defn add-plan [db name eids]
   (j/insert! db :plan {:name name})

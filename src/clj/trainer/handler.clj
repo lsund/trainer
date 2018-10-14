@@ -25,6 +25,12 @@
   (routes
    (GET "/" {:keys [session]}
         (render/index config (:exercise-list session)))
+   (POST "/add-exercise" [name sets reps weight]
+         (db/add db :exercise {:name name
+                               :sets (util/parse-int sets)
+                               :reps (util/parse-int reps)
+                               :weight (util/parse-int weight)})
+         (redirect "/"))
    (POST "/add-to-plan" {:keys [session params]}
          (let [exercises (:exercise-list session [])
                session (assoc session :exercise-list (conj exercises (:exercise params)))]
@@ -34,9 +40,8 @@
          (db/add-plan db (:name params) (map util/parse-int (:exercise-list session)))
          (-> (redirect "/")
              (assoc :session nil)))
-   (POST "/add-exercise" [name]
-         (db/add db :exercise {:name name})
-         (redirect "/"))
+   (GET "/complete-plan" [plan]
+         (render/complete-plan config (util/parse-int plan)))
    (r/resources "/")
    (r/not-found render/not-found)))
 

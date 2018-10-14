@@ -22,6 +22,9 @@
     [:h3 "Add Exercise"]
     (form-to [:post "/add-exercise"]
              [:input {:name "name" :type :text :placeholder "Exercise name"}]
+             [:input {:name "sets" :type :number :min "0" :placeholder "Sets"}]
+             [:input {:name "reps" :type :number :min "0" :placeholder "Reps"}]
+             [:input {:name "weight" :type :number :min "0" :placeholder "Weight (KG)"}]
              [:button.mui-btn "Add exercise"])
     [:h3 "Make a new plan"]
     (form-to [:post "/add-to-plan"]
@@ -54,8 +57,34 @@
           (for [t (db/tasks-for-plan db (:id p))]
             [:tr
              [:td (id->exercise-name db (:exerciseid t))]])]]])]
-
+    [:h3 "Complete a plan"]
+    (form-to [:get "/complete-plan"]
+             [:select {:name "plan"}
+              (for [e (db/all db :plan)]
+                [:option {:value (:id e)} (:name e)])]
+             [:button.mui-btn "Start"])
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))
+
+(defn complete-plan [{:keys [db]} id]
+  (println id)
+  (html5
+   [:head
+    [:title "Complete plan"]]
+   [:body
+    [:table
+     [:thead
+      [:tr
+       [:th "Exercise"]
+       [:th "Sets"]
+       [:th "Reps"]
+       [:th "Kg"]]]
+     [:tbody
+      (for [t (db/tasks-for-plan db id)]
+        [:tr
+         [:td (id->exercise-name db (:exerciseid t))]
+         [:td "3"]
+         [:td "12"]
+         [:td "20"]])]]]))
 
 (def not-found (html5 "not found"))
