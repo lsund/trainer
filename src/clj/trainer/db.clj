@@ -43,6 +43,13 @@
 (defn all [db table]
   (j/query db [(str "select * from " (name table))]))
 
+(defn all-done-exercises-with-name [db]
+  (j/query db ["SELECT
+                DoneExercise.day, DoneExercise.sets, DoneExercise.reps,
+                Doneexercise.weight, exercise.name
+                FROM DoneExercise
+                INNER JOIN exercise on DoneExercise.exerciseId = exercise.id;"]))
+
 (defn exercise-ids-for-plan [db id]
   (map :exerciseid (j/query db ["select exerciseid from planexercise where planid=?" id])))
 

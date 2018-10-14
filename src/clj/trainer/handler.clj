@@ -41,31 +41,35 @@
 (defn save-plan-instance [db params]
   (let [planid (-> params :plan util/parse-int)
         day (util/->localdate (:day params))
-        es
-        (for [[id props] (group-by :id (for [p (filter is-exercise-property params)]
-                                         (process-exercise-property p)))]
-          (make-exercise id props))]
+        es (for [[id props] (group-by :id (for [p (filter is-exercise-property params)]
+                                            (process-exercise-property p)))]
+             (make-exercise id props))]
     (doseq [e es]
-      (let [props (select-keys e [:sets :reps :weight])]
-        (when-not (:skip e)
-          (db/add db
-                  :doneexercise
-                  (merge {:day day
-                          :planid planid
-                          :exerciseid (:id e)}
-                         props))
-          (db/update db :exercise props (:id e)))))))
+      (when-not (:skip e)
+        (db/add db
+                :doneexercise
+                (merge {:day day
+                        :planid planid
+                        :exerciseid (:id e)}
+                       (select-keys e [:sets :reps :weight])))))))
 
 (defn- app-routes
   [{:keys [db] :as config}]
   (routes
    (GET "/" {:keys [session]}
         (render/index config (:exercise-list session)))
+   (GET "/history" []
+        (render/history config))
    (POST "/add-exercise" [name sets reps weight]
          (db/add db :exercise {:name name
                                :sets (util/parse-int sets)
                                :reps (util/parse-int reps)
                                :weight (util/parse-int weight)})
+         (redirect "/"))
+   (POST "/update-exercise" [id sets reps weight]
+         (db/update db :exercise {:sets (util/parse-int sets)
+                                  :reps (util/parse-int reps)
+                                  :weight (util/parse-int weight)} (util/parse-int id))
          (redirect "/"))
    (POST "/add-to-plan" {:keys [session params]}
          (let [exercises (:exercise-list session [])

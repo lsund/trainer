@@ -17,22 +17,24 @@
    [:head
     [:title "Trainer"]]
    [:body
+    (form-to [:get "/history"]
+             [:input {:type :submit :value "History"}])
     [:h1 "Trainer"]
     [:p "This is a program for logging your gym results."]
-    [:h3 "Add Exercise"]
+    [:h2 "Add Exercise"]
     (form-to [:post "/add-exercise"]
              [:input {:name "name" :type :text :placeholder "Exercise name"}]
              [:input {:name "sets" :type :number :min "0" :placeholder "Sets"}]
              [:input {:name "reps" :type :number :min "0" :placeholder "Reps"}]
              [:input {:name "weight" :type :number :min "0" :placeholder "Weight (KG)"}]
              [:button.mui-btn "Add exercise"])
-    [:h3 "Make a new plan"]
+    [:h2 "Make a new plan"]
     (form-to [:post "/add-to-plan"]
              [:select {:name "exercise"}
               (for [e (db/all db :exercise)]
                 [:option {:value (:id e)} (:name e)])]
              [:button.mui-btn "Add to plan"])
-    [:h3 "Current plan"]
+    [:h2 "Current plan"]
     [:table
      [:thead
       [:tr
@@ -44,11 +46,11 @@
     (form-to [:post "/save-plan"]
              [:input {:name "name" :type :text :placeholder "Plan name"}]
              [:button.mui-btn "Save plan"])
-    [:h3 "Existing plans"]
+    [:h2 "Existing plans"]
     [:ul
      (for [p (db/all db :plan)]
        [:li
-        [:div (:name p)]
+        [:h3 (:name p)]
         [:table
          [:thead
           [:tr
@@ -58,12 +60,25 @@
            [:th "Kg"]]]
          [:tbody
           (for [eid (db/exercise-ids-for-plan db (:id p))]
-            (let [{:keys [name sets reps weight]} (db/get-row db :exercise eid)]
+            ;; TODO do not do this
+            (let [{:keys [id name sets reps weight] :as e} (db/get-row db :exercise eid)]
               [:tr
-               [:td name]
-               [:td sets]
-               [:td reps]
-               [:td weight]]))]]])]
+               [:td (:name e)]
+               (form-to [:post "/update-exercise"]
+                        [:input {:name "id" :type :hidden :value id}]
+                        [:input.hidden {:type :submit}]
+                        [:td [:input {:name "sets"
+                                      :type :number
+                                      :value sets
+                                      :min "0"}]]
+                        [:td [:input {:name "reps"
+                                      :type :number
+                                      :value reps
+                                      :min "0"}]]
+                        [:td [:input {:name "weight"
+                                      :type :number
+                                      :value weight
+                                      :min "0"}]])]))]]])]
     [:h3 "Complete a plan"]
     (form-to [:get "/complete-plan"]
              [:select {:name "plan"}
@@ -76,7 +91,7 @@
 (defn complete-plan [{:keys [db]} id]
   (html5
    [:head
-    [:title "Complete plan"]]
+    [:title "Trainer - Complete plan"]]
    [:body
     (form-to [:post "/save-plan-instance"]
              [:input {:type :hidden :name "plan" :value id}]
@@ -91,6 +106,7 @@
                 [:th "Skip?"]]]
               [:tbody
                (for [eid (db/exercise-ids-for-plan db id)]
+                 ;; TODO do not do this
                  (let [e (db/get-row db :exercise eid)]
                    [:tr
                     [:td (:name e)]
@@ -109,5 +125,31 @@
                     [:td [:input {:name (str eid "_skip")
                                   :type :checkbox}]]]))]]
              [:input {:type :submit :value "Save plan"}])]))
+
+(defn history [{:keys [db]}]
+  (html5
+   [:head
+    [:title "Trainer - History"]
+    [:body
+     (for [[day es] (->> (db/all-done-exercises-with-name db)
+                        (group-by :day)
+                        sort
+                        reverse)]
+       [:div
+        [:h3 day]
+        [:table
+         [:thead
+          [:tr
+           [:th "Exercise"]
+           [:th "Sets"]
+           [:th "Reps"]
+           [:th "Kg"]]]
+         [:tbody
+          (for [{:keys [name sets reps weight] :as e} es]
+            [:tr
+             [:td name]
+             [:td sets]
+             [:td reps]
+             [:td weight]])]]])]]))
 
 (def not-found (html5 "not found"))
