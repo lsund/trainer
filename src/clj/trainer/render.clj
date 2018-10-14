@@ -80,14 +80,15 @@
    [:body
     (form-to [:post "/save-plan-instance"]
              [:input {:type :hidden :name "plan" :value id}]
-             [:input {:type :date :name "day"}]
+             [:input {:type :date :name "day" :required "true"}]
              [:table
               [:thead
                [:tr
                 [:th "Exercise"]
                 [:th "Sets"]
                 [:th "Reps"]
-                [:th "Kg"]]]
+                [:th "Kg"]
+                [:th "Skip?"]]]
               [:tbody
                (for [eid (db/exercise-ids-for-plan db id)]
                  (let [e (db/get-row db :exercise eid)]
@@ -104,7 +105,9 @@
                     [:td [:input {:name (str eid "_weight")
                                   :type :number
                                   :value (:weight e)
-                                  :min "0"}]]]))]]
+                                  :min "0"}]]
+                    [:td [:input {:name (str eid "_skip")
+                                  :type :checkbox}]]]))]]
              [:input {:type :submit :value "Save plan"}])]))
 
 (def not-found (html5 "not found"))

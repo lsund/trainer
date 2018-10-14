@@ -21,11 +21,12 @@
    [trainer.render :as render]))
 
 (defn process-exercise-property [[k v]]
-  (println k v)
   (let [[id prop & _] (string/split k #"_")]
     {:id (util/parse-int id)
      :key (keyword prop)
-     :value (util/parse-int v)}))
+     :value (if (= v "on")
+              :true
+              (util/parse-int v))}))
 
 (defn make-exercise [id props]
   (assoc (into {} (for [prop props]
@@ -45,10 +46,15 @@
                                          (process-exercise-property p)))]
           (make-exercise id props))]
     (doseq [e es]
-      (db/add db :doneexercise {:day day
-                                :planid planid
-                                :exerciseid (:id e)})
-      (db/update db :exercise (select-keys e [:sets :reps :weight]) (:id e)))))
+      (let [props (select-keys e [:sets :reps :weight])]
+        (when-not (:skip e)
+          (db/add db
+                  :doneexercise
+                  (merge {:day day
+                          :planid planid
+                          :exerciseid (:id e)}
+                         props))
+          (db/update db :exercise props (:id e)))))))
 
 (defn- app-routes
   [{:keys [db] :as config}]
