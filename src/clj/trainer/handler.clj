@@ -51,7 +51,8 @@
                 (merge {:day day
                         :planid planid
                         :exerciseid (:id e)}
-                       (select-keys e [:sets :reps :weight])))))))
+                       (select-keys e [:sets :reps :weight])))))
+    (db/increment-plan-completed-count db planid)))
 
 (defn- app-routes
   [{:keys [db] :as config}]

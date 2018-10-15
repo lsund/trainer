@@ -55,3 +55,6 @@
 
 (defn update [db table update-map id]
   (j/update! db table update-map ["id=?" id]))
+
+(defn increment-plan-completed-count [db id]
+  (j/execute! db ["update plan set timescompleted = timescompleted + 1 where id = ?" id]))

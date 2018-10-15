@@ -18,7 +18,8 @@ CREATE TABLE Cardio
 CREATE TABLE Plan
 (
     id              SERIAL PRIMARY KEY,
-    name            varchar(64) NOT NULL UNIQUE
+    name            varchar(64) NOT NULL UNIQUE,
+    timescompleted  INT NOT NULL
 );
 
 CREATE TABLE PlanExercise

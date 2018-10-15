@@ -50,7 +50,7 @@
     [:ul
      (for [p (db/all db :plan)]
        [:li
-        [:h3 (:name p)]
+        [:h3 (str (:name p) " completed " (:timescompleted p) " times")]
         [:table
          [:thead
           [:tr
