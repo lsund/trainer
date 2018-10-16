@@ -22,22 +22,13 @@ CREATE TABLE Plan
     timescompleted  INT NOT NULL
 );
 
-CREATE TABLE PlanExercise
+CREATE TABLE PlannedExercise
 (
     id              SERIAL PRIMARY KEY,
     exerciseid      INT NOT NULL,
     planid          INT NOT NULL,
     FOREIGN KEY     (planid) REFERENCES PLAN (id),
     FOREIGN KEY     (exerciseid) REFERENCES Exercise (id)
-);
-
-CREATE TABLE PlanCardio
-(
-    id              SERIAL PRIMARY KEY,
-    cardioid        INT NOT NULL,
-    planid          INT NOT NULL,
-    FOREIGN KEY     (planid) REFERENCES PLAN (id),
-    FOREIGN KEY     (cardioid) REFERENCES Exercise (id)
 );
 
 CREATE TABLE DoneExercise
@@ -51,17 +42,4 @@ CREATE TABLE DoneExercise
     weight          INT NOT NULL,
     FOREIGN KEY     (planid) REFERENCES PLAN (id),
     FOREIGN KEY     (exerciseid) REFERENCES Exercise (id)
-);
-
-CREATE TABLE DoneCardio
-(
-    id              SERIAL PRIMARY KEY,
-    day             DATE NOT NULL,
-    cardioid        INT NOT NULL,
-    planid          INT NOT NULL,
-    name            varchar(64) NOT NULL UNIQUE,
-    duration        INT NOT NULL,
-    spec            INT NOT NULL,
-    FOREIGN KEY     (planid) REFERENCES PLAN (id),
-    FOREIGN KEY     (cardioid) REFERENCES Exercise (id)
 );

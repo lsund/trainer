@@ -32,16 +32,16 @@
   (apply j/insert! args))
 
 (defn get-row [db table id]
-  (first (j/query db [(str "select * from " (name table) " where id=?") id])))
+  (first (j/query db [(str "SELECT * FROM " (name table) " WHERE id=?") id])))
 
 (defn add-plan [db name eids]
   (j/insert! db :plan {:name name})
-  (let [plan (first (j/query db ["select * from plan where name=?" name]))]
+  (let [plan (first (j/query db ["SELECT * FROM plan WHERE name=?" name]))]
     (doseq [eid eids]
-      (add db :planexercise {:planid (:id plan)
+      (add db :plannedexercise {:planid (:id plan)
                              :exerciseid eid}))))
 (defn all [db table]
-  (j/query db [(str "select * from " (name table))]))
+  (j/query db [(str "SELECT * FROM " (name table))]))
 
 (defn all-done-exercises-with-name [db]
   (j/query db ["SELECT
@@ -51,10 +51,10 @@
                 INNER JOIN exercise on DoneExercise.exerciseId = exercise.id;"]))
 
 (defn exercise-ids-for-plan [db id]
-  (map :exerciseid (j/query db ["select exerciseid from planexercise where planid=?" id])))
+  (map :exerciseid (j/query db ["SELECT exerciseid FROM plannedexercise WHERE planid=?" id])))
 
 (defn update [db table update-map id]
   (j/update! db table update-map ["id=?" id]))
 
 (defn increment-plan-completed-count [db id]
-  (j/execute! db ["update plan set timescompleted = timescompleted + 1 where id = ?" id]))
+  (j/execute! db ["update plan set timescompleted = timescompleted + 1 WHERE id = ?" id]))
