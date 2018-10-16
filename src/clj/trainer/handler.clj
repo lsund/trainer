@@ -62,13 +62,13 @@
    (GET "/history" []
         (render/history config))
    (POST "/add-exercise" [name sets reps weight]
-         (db/add db :exercise {:name name
-                               :sets (util/parse-int sets)
-                               :reps (util/parse-int reps)
-                               :weight (util/parse-int weight)})
+         (db/add db :weightlift {:name name
+                                 :sets (util/parse-int sets)
+                                 :reps (util/parse-int reps)
+                                 :weight (util/parse-int weight)})
          (redirect "/"))
    (POST "/update-exercise" [id sets reps weight]
-         (db/update db :exercise {:sets (util/parse-int sets)
+         (db/update db :weightlift {:sets (util/parse-int sets)
                                   :reps (util/parse-int reps)
                                   :weight (util/parse-int weight)} (util/parse-int id))
          (redirect "/"))

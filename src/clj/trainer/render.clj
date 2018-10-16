@@ -8,8 +8,8 @@
    [trainer.util :as util]
    [trainer.html :as html]))
 
-(defn id->exercise-name [db id]
-  (->> id util/parse-int (db/get-row db :exercise) :name))
+(defn id->weightlift-name [db id]
+  (->> id util/parse-int (db/get-row db :weightlift) :name))
 
 (defn index
   [{:keys [db] :as config} exercise-list]
@@ -21,17 +21,17 @@
              [:input {:type :submit :value "History"}])
     [:h1 "Trainer"]
     [:p "This is a program for logging your gym results."]
-    [:h2 "Add Exercise"]
+    [:h2 "Add Weightlift"]
     (form-to [:post "/add-exercise"]
-             [:input {:name "name" :type :text :placeholder "Exercise name"}]
+             [:input {:name "name" :type :text :placeholder "weightlift name"}]
              [:input {:name "sets" :type :number :min "0" :placeholder "Sets"}]
              [:input {:name "reps" :type :number :min "0" :placeholder "Reps"}]
              [:input {:name "weight" :type :number :min "0" :placeholder "Weight (KG)"}]
-             [:button.mui-btn "Add exercise"])
+             [:button.mui-btn "Add Weightlift"])
     [:h2 "Make a new plan"]
     (form-to [:post "/add-to-plan"]
-             [:select {:name "exercise"}
-              (for [e (db/all db :exercise)]
+             [:select {:name "Weightlift"}
+              (for [e (db/all db :weightlift)]
                 [:option {:value (:id e)} (:name e)])]
              [:button.mui-btn "Add to plan"])
     [:h2 "Current plan"]
@@ -42,7 +42,7 @@
      [:tbody
       (for [id exercise-list]
         [:tr
-         [:td (id->exercise-name db id)]])]]
+         [:td (id->weightlift-name db id)]])]]
     (form-to [:post "/save-plan"]
              [:input {:name "name" :type :text :placeholder "Plan name"}]
              [:button.mui-btn "Save plan"])
@@ -54,14 +54,14 @@
         [:table
          [:thead
           [:tr
-           [:th "Exercise"]
+           [:th "Weightlift"]
            [:th "Sets"]
            [:th "Reps"]
            [:th "Kg"]]]
          [:tbody
           (for [eid (db/exercise-ids-for-plan db (:id p))]
             ;; TODO do not do this
-            (let [{:keys [id name sets reps weight] :as e} (db/get-row db :exercise eid)]
+            (let [{:keys [id name sets reps weight] :as e} (db/get-row db :weightlift eid)]
               [:tr
                [:td (:name e)]
                (form-to [:post "/update-exercise"]
@@ -99,7 +99,7 @@
              [:table
               [:thead
                [:tr
-                [:th "Exercise"]
+                [:th "Weightlift"]
                 [:th "Sets"]
                 [:th "Reps"]
                 [:th "Kg"]
@@ -107,7 +107,7 @@
               [:tbody
                (for [eid (db/exercise-ids-for-plan db id)]
                  ;; TODO do not do this
-                 (let [e (db/get-row db :exercise eid)]
+                 (let [e (db/get-row db :weightlift eid)]
                    [:tr
                     [:td (:name e)]
                     [:td [:input {:name (str eid "_sets")
@@ -140,7 +140,7 @@
         [:table
          [:thead
           [:tr
-           [:th "Exercise"]
+           [:th "Weightlift"]
            [:th "Sets"]
            [:th "Reps"]
            [:th "Kg"]]]
