@@ -195,6 +195,6 @@
             (when weightlifts
               [:table
                (html/weightlift-tablehead)
-               (html/weightlift-tablebody value-or-na weightlifts)])])))]]))
+               (html/weightlift-tablebody value-or-na weightlifts nil)])])))]]))
 
 (def not-found (html5 "not found"))
