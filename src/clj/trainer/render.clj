@@ -130,6 +130,16 @@
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))
 
+(defn number-input-if-number [v exerciseid exercisetype]
+  (cond (util/parse-int v) [:input {:name (str (if (= exercisetype :weightlift) "_1" "_2")
+                                               exerciseid
+                                               (str "_" 'v))
+                                    :type :number
+                                    :value v
+                                    :min "0"}]
+        (nil? v) "N/A"
+        :default v))
+
 (defn complete-plan [{:keys [db]} id]
   (html5
    [:head
@@ -140,53 +150,23 @@
              [:input {:type :date :name "day" :required "true"}]
              [:table
               (html/cardio-tablehead "Skip?")
-              [:tbody
-               (for [{:keys [exerciseid name duration distance highpulse lowpulse level]}
-                     (db/cardios-for-plan db id)]
-                 [:tr
-                  [:td name]
-                  [:td [:input {:name (str "2_" exerciseid "_duration")
-                                :type :number
-                                :value duration
-                                :min "0"}]]
-                  [:td [:input {:name (str "2_" exerciseid "_distance")
-                                :type :number
-                                :value distance
-                                :min "0"}]]
-                  [:td [:input {:name (str "2_" exerciseid "_highpulse")
-                                :type :number
-                                :value highpulse
-                                :min "0"}]]
-                  [:td [:input {:name (str "2_" exerciseid "_lowpulse")
-                                :type :number
-                                :value lowpulse
-                                :min "0"}]]
-                  [:td [:input {:name (str "2_" exerciseid "_level")
-                                :type :number
-                                :value level
-                                :min "0"}]]
-                  [:td [:input {:name (str "2_" exerciseid "_skip")
-                                :type :checkbox}]]])]]
+              ;; TODO this is not pretty
+              (let [es (db/cardios-for-plan db id)]
+                (html/cardio-tablebody number-input-if-number
+                                       es
+                                       [:td [:input {:name (str "2_" (:exerciseid es) "_skip")
+                                                     :type :checkbox}]]
+                                       (:exerciseid es)
+                                       :cardio))]
              [:table
               (html/weightlift-tablehead "Skip?")
-              [:tbody
-               (for [{:keys [exerciseid name sets reps weight]} (db/weightlifts-for-plan db id)]
-                 [:tr
-                  [:td name]
-                  [:td [:input {:name (str "1_" exerciseid "_sets")
-                                :type :number
-                                :value sets
-                                :min "0"}]]
-                  [:td [:input {:name (str "1_" exerciseid "_reps")
-                                :type :number
-                                :value reps
-                                :min "0"}]]
-                  [:td [:input {:name (str "1_" exerciseid "_weight")
-                                :type :number
-                                :value weight
-                                :min "0"}]]
-                  [:td [:input {:name (str "1_" exerciseid "_skip")
-                                :type :checkbox}]]])]]
+              (let [es (db/weightlifts-for-plan db id)]
+                (html/weightlift-tablebody number-input-if-number
+                                           es
+                                           [:td [:input {:name (str "1_" (:exerciseid es) "_skip")
+                                                         :type :checkbox}]]
+                                           (:exerciseid es)
+                                           :weightlift))]
              [:input {:type :submit :value "Save plan"}])]))
 
 (defn- value-or-na [v]

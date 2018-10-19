@@ -6,9 +6,9 @@
 
 (defn parse-int [x]
   (cond
-    (empty? x) nil
     (= (type x) java.lang.Integer) x
-    (= (type x) java.lang.String) (Integer. (re-find #"\d+" x))
+    (= (type x) java.lang.String) (try (Integer. (re-find #"\d+" x))
+                                       (catch NumberFormatException _ nil))
     :default nil))
 
 (def date-string "yyyy-MM-dd")
