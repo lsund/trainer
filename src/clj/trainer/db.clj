@@ -49,23 +49,49 @@
   (j/query db [(str "SELECT * FROM " (name table))]))
 
 (defn all-done-weightlifts-with-name [db]
-  (j/query db ["SELECT
-                DoneWeightLift.day, DoneWeightLift.sets, DoneWeightLift.reps,
-                DoneWeightLift.weight, weightlift.name
-                FROM DoneWeightLift
-                INNER JOIN weightlift on DoneWeightLift.exerciseId = weightlift.id;"]))
+  (j/query db ["select
+                doneweightlift.day, doneweightlift.sets, doneweightlift.reps,
+                doneweightlift.weight, weightlift.name
+                from doneweightlift
+                inner join weightlift on doneweightlift.exerciseid = weightlift.id;"]))
 
 (defn all-done-cardios-with-name [db]
-  (j/query db ["SELECT
-                DoneCardio.day, DoneCardio.duration, DoneCardio.distance,
-                DoneCardio.highpulse, DoneCardio.lowpulse, DoneCardio.level, cardio.name
-                FROM DoneCardio
-                INNER JOIN cardio on DoneCardio.exerciseId = cardio.id;"]))
+  (j/query db ["select donecardio.day,
+                       donecardio.duration,
+                       donecardio.distance,
+                       donecardio.highpulse,
+                       donecardio.lowpulse,
+                       donecardio.level, cardio.name
+                from donecardio
+                inner join cardio on donecardio.exerciseid = cardio.id;"]))
 
-(defn weightlift-ids-for-plan [db id]
-  (map :exerciseid
-       (j/query db
-                ["SELECT exerciseid FROM plannedexercise WHERE planid=? and exercisetype=1" id])))
+(defn weightlifts-for-plan [db id]
+  (j/query db
+           ["select exerciseid,
+                    weightlift.name,
+                    weightlift.sets,
+                    weightlift.reps,
+                    weightlift.weight
+             from plannedexercise
+             inner join weightlift
+             on weightlift.id = exerciseid
+             and planid = ?
+             and exercisetype = 1" id]))
+
+(defn cardios-for-plan [db id]
+  (j/query db
+           ["select exerciseid,
+                    cardio.name,
+                    cardio.duration,
+                    cardio.distance,
+                    cardio.highpulse,
+                    cardio.lowpulse,
+                    cardio.level
+             from plannedexercise
+             inner join cardio
+             on cardio.id = exerciseid
+             and planid = ?
+             and exercisetype = 2" id]))
 
 (defn cardio-ids-for-plan [db id]
   (map :exerciseid

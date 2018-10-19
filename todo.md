@@ -12,6 +12,6 @@
     Each has a corresponding table with different properties. Every exercise
     can be added to the planexercise table, no matter what type it is.
 [ ] Shold not be able to add the same exercise to plan
-[ ] Fix the todos in render
+[x] Fix the todos in render
 [ ] add-exercise and update-exercise is now specific to weightlift. It needs to
     adapted. Probably use the exercise type here.
