@@ -71,14 +71,7 @@
        [:li
         [:h3 (str (:name p) " completed " (:timescompleted p) " times")]
         [:table
-         [:thead
-          [:tr
-           [:th "Cardio"]
-           [:th "Duration"]
-           [:th "Distance"]
-           [:th "High Pulse"]
-           [:th "Low Pulse"]
-           [:th "Level"]]]
+         (html/cardio-tablehead)
          [:tbody
           (for [eid (db/cardio-ids-for-plan db (:id p))]
             ;; TODO do not do this
@@ -110,12 +103,7 @@
                                       :value level
                                       :min "0"}]])]))]]
         [:table
-         [:thead
-          [:tr
-           [:th "Weightlift"]
-           [:th "Sets"]
-           [:th "Reps"]
-           [:th "Kg"]]]
+         (html/weightlift-tablehead)
          [:tbody
           (for [eid (db/weightlift-ids-for-plan db (:id p))]
             ;; TODO do not do this
@@ -155,15 +143,7 @@
              [:input {:type :hidden :name "plan" :value id}]
              [:input {:type :date :name "day" :required "true"}]
              [:table
-              [:thead
-               [:tr
-                [:th "Cardio"]
-                [:th "Duration"]
-                [:th "Distance"]
-                [:th "High Pulse"]
-                [:th "Low Pulse"]
-                [:th "Level"]
-                [:th "Skip?"]]]
+              (html/cardio-tablehead "Skip?")
               [:tbody
                (for [eid (db/cardio-ids-for-plan db id)]
                  ;; TODO do not do this
@@ -193,13 +173,7 @@
                     [:td [:input {:name (str "2_" eid "_skip")
                                   :type :checkbox}]]]))]]
              [:table
-              [:thead
-               [:tr
-                [:th "Weightlift"]
-                [:th "Sets"]
-                [:th "Reps"]
-                [:th "Kg"]
-                [:th "Skip?"]]]
+              (html/weightlift-tablehead "Skip?")
               [:tbody
                (for [eid (db/weightlift-ids-for-plan db id)]
                  ;; TODO do not do this
@@ -222,6 +196,9 @@
                                   :type :checkbox}]]]))]]
              [:input {:type :submit :value "Save plan"}])]))
 
+(defn- value-or-na [v]
+  (if v v "N/A"))
+
 (defn history [{:keys [db]}]
   (html5
    [:head
@@ -240,37 +217,11 @@
             [:h3 day]
             (when cardios
               [:table
-               [:thead
-                [:tr
-                 [:th "Cardio"]
-                 [:th "Duration"]
-                 [:th "Distance"]
-                 [:th "High Pulse"]
-                 [:th "Low Pulse"]
-                 [:th "Level"]]]
-               [:tbody
-                (for [{:keys [name duration distance highpulse lowpulse level] :as e} cardios]
-                  [:tr
-                   [:td name]
-                   [:td duration]
-                   [:td distance]
-                   [:td highpulse]
-                   [:td lowpulse]
-                   [:td level]])]])
+               (html/cardio-tablehead)
+               (html/cardio-tablebody value-or-na cardios)])
             (when weightlifts
               [:table
-               [:thead
-                [:tr
-                 [:th "Weightlift"]
-                 [:th "Sets"]
-                 [:th "Reps"]
-                 [:th "Kg"]]]
-               [:tbody
-                (for [{:keys [name sets reps weight] :as e} weightlifts]
-                  [:tr
-                   [:td name]
-                   [:td sets]
-                   [:td reps]
-                   [:td weight]])]])])))]]))
+               (html/weightlift-tablehead)
+               (html/weightlift-tablebody value-or-na weightlifts)])])))]]))
 
 (def not-found (html5 "not found"))
