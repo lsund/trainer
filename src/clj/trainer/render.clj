@@ -184,7 +184,7 @@
                                     (db/all-done-weightlifts-with-name db))
                                (group-by :day))]
 
-       (for [[day e] (merge-with concat weightlift-map cardio-map)]
+       (for [[day e] (-> (merge-with concat weightlift-map cardio-map) sort reverse)]
          (let [{:keys [cardios weightlifts]} (group-by :collection e)]
            [:div
             [:h3 day]
