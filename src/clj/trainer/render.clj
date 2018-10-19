@@ -8,11 +8,11 @@
    [trainer.util :as util]
    [trainer.html :as html]))
 
-(defn id->weightlift-name [db id]
-  (->> id util/parse-int (db/get-row db :weightlift) :name))
+(defn id->name [db table id]
+  (->> id util/parse-int (db/get-row db table) :name))
 
 (defn index
-  [{:keys [db] :as config} exercise-list]
+  [{:keys [db] :as config} {:keys [weightlift-list cardio-list] :as session}]
   (html5
    [:head
     [:title "Trainer"]]
@@ -22,16 +22,32 @@
     [:h1 "Trainer"]
     [:p "This is a program for logging your gym results."]
     [:h2 "Add Weightlift"]
-    (form-to [:post "/add-exercise"]
+    (form-to [:post "/add-weightlift"]
              [:input {:name "name" :type :text :placeholder "weightlift name"}]
              [:input {:name "sets" :type :number :min "0" :placeholder "Sets"}]
              [:input {:name "reps" :type :number :min "0" :placeholder "Reps"}]
              [:input {:name "weight" :type :number :min "0" :placeholder "Weight (KG)"}]
+             [:input {:name "type" :type :hidden :value "1"}]
              [:button.mui-btn "Add Weightlift"])
+    [:h2 "Add Cardio"]
+    (form-to [:post "/add-cardio"]
+             [:input {:name "name" :type :text :placeholder "cardio name"}]
+             [:input {:name "duration" :type :number :min "0" :placeholder "Duration"}]
+             [:input {:name "distance" :type :number :min "0" :placeholder "Distance"}]
+             [:input {:name "highpulse" :type :number :min "0" :placeholder "High Pulse"}]
+             [:input {:name "lowpulse" :type :number :min "0" :placeholder "Low Pulse"}]
+             [:input {:name "level" :type :number :min "0" :placeholder "Level"}]
+             [:input {:name "type" :type :hidden :value "2"}]
+             [:button.mui-btn "Add Cardio"])
     [:h2 "Make a new plan"]
-    (form-to [:post "/add-to-plan"]
-             [:select {:name "Weightlift"}
+    (form-to [:post "/add-weightlift-to-plan"]
+             [:select {:name "weightlift"}
               (for [e (db/all db :weightlift)]
+                [:option {:value (:id e)} (:name e)])]
+             [:button.mui-btn "Add to plan"])
+    (form-to [:post "/add-cardio-to-plan"]
+             [:select {:name "cardio"}
+              (for [e (db/all db :cardio)]
                 [:option {:value (:id e)} (:name e)])]
              [:button.mui-btn "Add to plan"])
     [:h2 "Current plan"]
@@ -40,9 +56,12 @@
       [:tr
        [:th "Name"]]]
      [:tbody
-      (for [id exercise-list]
+      (for [id weightlift-list]
         [:tr
-         [:td (id->weightlift-name db id)]])]]
+         [:td (id->name db :weightlift id)]])
+      (for [id cardio-list]
+        [:tr
+         [:td (id->name db :cardio id)]])]]
     (form-to [:post "/save-plan"]
              [:input {:name "name" :type :text :placeholder "Plan name"}]
              [:button.mui-btn "Save plan"])
@@ -54,17 +73,56 @@
         [:table
          [:thead
           [:tr
+           [:th "Cardio"]
+           [:th "Duration"]
+           [:th "Distance"]
+           [:th "High Pulse"]
+           [:th "Low Pulse"]
+           [:th "Level"]]]
+         [:tbody
+          (for [eid (db/cardio-ids-for-plan db (:id p))]
+            ;; TODO do not do this
+            (let [{:keys [id name duration distance highpulse lowpulse level] :as e}
+                  (db/get-row db :cardio eid)]
+              [:tr
+               [:td (:name e)]
+               (form-to [:post "/update-cardio"]
+                        [:input {:name "id" :type :hidden :value id}]
+                        [:input.hidden {:type :submit}]
+                        [:td [:input {:name "duration"
+                                      :type :number
+                                      :value duration
+                                      :min "0"}]]
+                        [:td [:input {:name "distance"
+                                      :type :number
+                                      :value distance
+                                      :min "0"}]]
+                        [:td [:input {:name "highpulse"
+                                      :type :number
+                                      :value highpulse
+                                      :min "0"}]]
+                        [:td [:input {:name "lowpulse"
+                                      :type :number
+                                      :value lowpulse
+                                      :min "0"}]]
+                        [:td [:input {:name "level"
+                                      :type :number
+                                      :value level
+                                      :min "0"}]])]))]]
+        [:table
+         [:thead
+          [:tr
            [:th "Weightlift"]
            [:th "Sets"]
            [:th "Reps"]
            [:th "Kg"]]]
          [:tbody
-          (for [eid (db/exercise-ids-for-plan db (:id p))]
+          (for [eid (db/weightlift-ids-for-plan db (:id p))]
             ;; TODO do not do this
             (let [{:keys [id name sets reps weight] :as e} (db/get-row db :weightlift eid)]
               [:tr
                [:td (:name e)]
-               (form-to [:post "/update-exercise"]
+               (form-to [:post "/update-weightlift"]
                         [:input {:name "id" :type :hidden :value id}]
                         [:input.hidden {:type :submit}]
                         [:td [:input {:name "sets"
@@ -99,30 +157,68 @@
              [:table
               [:thead
                [:tr
+                [:th "Cardio"]
+                [:th "Duration"]
+                [:th "Distance"]
+                [:th "High Pulse"]
+                [:th "Low Pulse"]
+                [:th "Level"]
+                [:th "Skip?"]]]
+              [:tbody
+               (for [eid (db/cardio-ids-for-plan db id)]
+                 ;; TODO do not do this
+                 (let [e (db/get-row db :cardio eid)]
+                   [:tr
+                    [:td (:name e)]
+                    [:td [:input {:name (str "2_" eid "_duration")
+                                  :type :number
+                                  :value (:duration e)
+                                  :min "0"}]]
+                    [:td [:input {:name (str "2_" eid "_distance")
+                                  :type :number
+                                  :value (:distance e)
+                                  :min "0"}]]
+                    [:td [:input {:name (str "2_" eid "_highpulse")
+                                  :type :number
+                                  :value (:highpulse e)
+                                  :min "0"}]]
+                    [:td [:input {:name (str "2_" eid "_lowpulse")
+                                  :type :number
+                                  :value (:lowpulse e)
+                                  :min "0"}]]
+                    [:td [:input {:name (str "2_" eid "_level")
+                                  :type :number
+                                  :value (:level e)
+                                  :min "0"}]]
+                    [:td [:input {:name (str "2_" eid "_skip")
+                                  :type :checkbox}]]]))]]
+             [:table
+              [:thead
+               [:tr
                 [:th "Weightlift"]
                 [:th "Sets"]
                 [:th "Reps"]
                 [:th "Kg"]
                 [:th "Skip?"]]]
               [:tbody
-               (for [eid (db/exercise-ids-for-plan db id)]
+               (for [eid (db/weightlift-ids-for-plan db id)]
                  ;; TODO do not do this
                  (let [e (db/get-row db :weightlift eid)]
                    [:tr
                     [:td (:name e)]
-                    [:td [:input {:name (str eid "_sets")
+                    [:td [:input {:name (str "1_" eid "_sets")
                                   :type :number
                                   :value (:sets e)
                                   :min "0"}]]
-                    [:td [:input {:name (str eid "_reps")
+                    [:td [:input {:name (str "1_" eid "_reps")
                                   :type :number
                                   :value (:reps e)
                                   :min "0"}]]
-                    [:td [:input {:name (str eid "_weight")
+                    [:td [:input {:name (str "1_" eid "_weight")
                                   :type :number
                                   :value (:weight e)
                                   :min "0"}]]
-                    [:td [:input {:name (str eid "_skip")
+                    [:td [:input {:name (str "1_" eid "_skip")
                                   :type :checkbox}]]]))]]
              [:input {:type :submit :value "Save plan"}])]))
 
@@ -131,25 +227,50 @@
    [:head
     [:title "Trainer - History"]
     [:body
-     (for [[day es] (->> (db/all-done-exercises-with-name db)
-                        (group-by :day)
-                        sort
-                        reverse)]
-       [:div
-        [:h3 day]
-        [:table
-         [:thead
-          [:tr
-           [:th "Weightlift"]
-           [:th "Sets"]
-           [:th "Reps"]
-           [:th "Kg"]]]
-         [:tbody
-          (for [{:keys [name sets reps weight] :as e} es]
-            [:tr
-             [:td name]
-             [:td sets]
-             [:td reps]
-             [:td weight]])]]])]]))
+     (let [cardio-map (->> (map #(assoc % :collection :cardios)
+                                (db/all-done-cardios-with-name db))
+                           (group-by :day))
+           weightlift-map (->> (map #(assoc % :collection :weightlifts)
+                                    (db/all-done-weightlifts-with-name db))
+                               (group-by :day))]
+
+       (for [[day e] (merge-with concat weightlift-map cardio-map)]
+         (let [{:keys [cardios weightlifts]} (group-by :collection e)]
+           [:div
+            [:h3 day]
+            (when cardios
+              [:table
+               [:thead
+                [:tr
+                 [:th "Cardio"]
+                 [:th "Duration"]
+                 [:th "Distance"]
+                 [:th "High Pulse"]
+                 [:th "Low Pulse"]
+                 [:th "Level"]]]
+               [:tbody
+                (for [{:keys [name duration distance highpulse lowpulse level] :as e} cardios]
+                  [:tr
+                   [:td name]
+                   [:td duration]
+                   [:td distance]
+                   [:td highpulse]
+                   [:td lowpulse]
+                   [:td level]])]])
+            (when weightlifts
+              [:table
+               [:thead
+                [:tr
+                 [:th "Weightlift"]
+                 [:th "Sets"]
+                 [:th "Reps"]
+                 [:th "Kg"]]]
+               [:tbody
+                (for [{:keys [name sets reps weight] :as e} weightlifts]
+                  [:tr
+                   [:td name]
+                   [:td sets]
+                   [:td reps]
+                   [:td weight]])]])])))]]))
 
 (def not-found (html5 "not found"))

@@ -6,9 +6,10 @@
 
 (defn parse-int [x]
   (cond
+    (empty? x) nil
     (= (type x) java.lang.Integer) x
     (= (type x) java.lang.String) (Integer. (re-find #"\d+" x))
-    :default (throw (IllegalArgumentException. (str "Cannot parse type: " (type x))))))
+    :default nil))
 
 (def date-string "yyyy-MM-dd")
 

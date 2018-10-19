@@ -34,24 +34,43 @@
 (defn get-row [db table id]
   (first (j/query db [(str "SELECT * FROM " (name table) " WHERE id=?") id])))
 
-(defn add-plan [db name eids]
+(defn add-plan [db name weightlift-list cardio-list]
   (j/insert! db :plan {:name name})
   (let [plan (first (j/query db ["SELECT * FROM plan WHERE name=?" name]))]
-    (doseq [eid eids]
+    (doseq [eid weightlift-list]
       (add db :plannedexercise {:planid (:id plan)
-                             :exerciseid eid}))))
+                                :exerciseid eid
+                                :exercisetype 1}))
+    (doseq [eid cardio-list]
+      (add db :plannedexercise {:planid (:id plan)
+                                :exerciseid eid
+                                :exercisetype 2}))))
 (defn all [db table]
   (j/query db [(str "SELECT * FROM " (name table))]))
 
-(defn all-done-exercises-with-name [db]
+(defn all-done-weightlifts-with-name [db]
   (j/query db ["SELECT
-                DoneExercise.day, DoneExercise.sets, DoneExercise.reps,
-                Doneexercise.weight, exercise.name
-                FROM DoneExercise
-                INNER JOIN exercise on DoneExercise.exerciseId = exercise.id;"]))
+                DoneWeightLift.day, DoneWeightLift.sets, DoneWeightLift.reps,
+                DoneWeightLift.weight, weightlift.name
+                FROM DoneWeightLift
+                INNER JOIN weightlift on DoneWeightLift.exerciseId = weightlift.id;"]))
 
-(defn exercise-ids-for-plan [db id]
-  (map :exerciseid (j/query db ["SELECT exerciseid FROM plannedexercise WHERE planid=?" id])))
+(defn all-done-cardios-with-name [db]
+  (j/query db ["SELECT
+                DoneCardio.day, DoneCardio.duration, DoneCardio.distance,
+                DoneCardio.highpulse, DoneCardio.lowpulse, DoneCardio.level, cardio.name
+                FROM DoneCardio
+                INNER JOIN cardio on DoneCardio.exerciseId = cardio.id;"]))
+
+(defn weightlift-ids-for-plan [db id]
+  (map :exerciseid
+       (j/query db
+                ["SELECT exerciseid FROM plannedexercise WHERE planid=? and exercisetype=1" id])))
+
+(defn cardio-ids-for-plan [db id]
+  (map :exerciseid
+       (j/query db
+                ["SELECT exerciseid FROM plannedexercise WHERE planid=? and exercisetype=2" id])))
 
 (defn update [db table update-map id]
   (j/update! db table update-map ["id=?" id]))

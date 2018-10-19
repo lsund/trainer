@@ -21,7 +21,7 @@
    [trainer.render :as render]))
 
 (defn process-exercise-property [[k v]]
-  (let [[id prop & _] (string/split k #"_")]
+  (let [[_ id prop & _] (string/split k #"_")]
     {:id (util/parse-int id)
      :key (keyword prop)
      :value (if (= v "on")
@@ -34,51 +34,94 @@
          :id
          id))
 
-(defn is-exercise-property [[s _]]
+(defn is-weightlift-property [[s _]]
+  ;; `EXERCISETYPE_ ID_NAME` Example: `2_8_reps` means: the number of repetitions (reps) of a
+  ;; cardio exercise (2) of id (8)
   (and (string? s)
-       (re-matches #"[0-9]+_.*" s)))
+       (re-matches #"1_[0-9]+_.*" s)))
+
+(defn is-cardio-property [[s _]]
+  ;; `EXERCISETYPE_ ID_NAME` Example: `2_8_reps` means: the number of repetitions (reps) of a
+  ;; cardio exercise (2) of id (8)
+  (and (string? s)
+       (re-matches #"2_[0-9]+_.*" s)))
 
 (defn save-plan-instance [db params]
+  (println params)
   (let [planid (-> params :plan util/parse-int)
         day (util/->localdate (:day params))
-        es (for [[id props] (group-by :id (for [p (filter is-exercise-property params)]
-                                            (process-exercise-property p)))]
-             (make-exercise id props))]
-    (doseq [e es]
+        weightlifts (for [[id props] (group-by :id (for [p (filter is-weightlift-property params)]
+                                                     (process-exercise-property p)))]
+                      (make-exercise id props))
+        cardios (for [[id props] (group-by :id (for [p (filter is-cardio-property params)]
+                                                 (process-exercise-property p)))]
+                  (make-exercise id props))]
+    (doseq [e weightlifts]
       (when-not (:skip e)
         (db/add db
-                :doneexercise
+                :doneweightlift
                 (merge {:day day
                         :planid planid
                         :exerciseid (:id e)}
                        (select-keys e [:sets :reps :weight])))))
+    (doseq [e cardios]
+      (when-not (:skip e)
+        (db/add db
+                :donecardio
+                (merge {:day day
+                        :planid planid
+                        :exerciseid (:id e)}
+                       (select-keys e [:duration :distance :highpulse :lowpulse :level])))))
     (db/increment-plan-completed-count db planid)))
 
 (defn- app-routes
   [{:keys [db] :as config}]
   (routes
    (GET "/" {:keys [session]}
-        (render/index config (:exercise-list session)))
+        (render/index config session))
    (GET "/history" []
         (render/history config))
-   (POST "/add-exercise" [name sets reps weight]
+   (POST "/add-weightlift" [name sets reps weight]
          (db/add db :weightlift {:name name
                                  :sets (util/parse-int sets)
                                  :reps (util/parse-int reps)
                                  :weight (util/parse-int weight)})
          (redirect "/"))
-   (POST "/update-exercise" [id sets reps weight]
-         (db/update db :weightlift {:sets (util/parse-int sets)
-                                  :reps (util/parse-int reps)
-                                  :weight (util/parse-int weight)} (util/parse-int id))
+   (POST "/add-cardio" [name duration distance highpulse lowpulse level type]
+         (db/add db :cardio {:name name
+                             :duration (util/parse-int duration)
+                             :distance (util/parse-int distance)
+                             :highpulse (util/parse-int highpulse)
+                             :lowpulse (util/parse-int lowpulse)
+                             :level (util/parse-int level)})
          (redirect "/"))
-   (POST "/add-to-plan" {:keys [session params]}
-         (let [exercises (:exercise-list session [])
-               session (assoc session :exercise-list (conj exercises (:exercise params)))]
+   (POST "/update-weightlift" [id sets reps weight]
+         (db/update db :weightlift {:sets (util/parse-int sets)
+                                    :reps (util/parse-int reps)
+                                    :weight (util/parse-int weight)} (util/parse-int id))
+         (redirect "/"))
+   (POST "/update-cardio" [id duration distance highpulse lowpulse level]
+         (db/update db :cardio     {:duration (util/parse-int duration)
+                                    :distance (util/parse-int distance)
+                                    :highpulse (util/parse-int highpulse)
+                                    :lowpulse (util/parse-int lowpulse)
+                                    :level (util/parse-int level)} (util/parse-int id))
+         (redirect "/"))
+   (POST "/add-weightlift-to-plan" {:keys [session params]}
+         (let [weightlifts (:weightlift-list session [])
+               session (assoc session :weightlift-list (conj weightlifts (:weightlift params)))]
+           (-> (redirect "/")
+               (assoc :session session))))
+   (POST "/add-cardio-to-plan" {:keys [session params]}
+         (let [cardios (:cardio-list session [])
+               session (assoc session :cardio-list (conj cardios (:cardio params)))]
            (-> (redirect "/")
                (assoc :session session))))
    (POST "/save-plan" {:keys [session params]}
-         (db/add-plan db (:name params) (map util/parse-int (:exercise-list session)))
+         (db/add-plan db
+                      (:name params)
+                      (map util/parse-int (:weightlift-list session))
+                      (map util/parse-int (:cardio-list session)))
          (-> (redirect "/")
              (assoc :session nil)))
    (POST "/save-plan-instance" {:keys [params]}
