@@ -74,7 +74,7 @@
          (html/cardio-tablehead)
          [:tbody
           (for [{:keys [exerciseid name duration distance highpulse lowpulse level]}
-                (db/cardio-ids-for-plan db (:id p))]
+                (db/cardios-for-plan db (:id p))]
             [:tr
              [:td name]
              (form-to [:post "/update-cardio"]
