@@ -130,15 +130,21 @@
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))
 
-(defn number-input-if-number [exerciseid exercisetype v]
-  (cond (util/parse-int v) [:input {:name (str (if (= exercisetype :weightlift) "_1" "_2")
+(defn modifiable-input [exercisetype [k v] exerciseid]
+  (cond (util/parse-int v) [:input {:name (str (if (= exercisetype :weightlift)
+                                                 "1_"
+                                                 "2_")
                                                exerciseid
-                                               (str "_" 'v))
+                                               (str "_" (name k)))
                                     :type :number
                                     :value v
                                     :min "0"}]
         (nil? v) "N/A"
         :default v))
+
+(defn skip-input [e]
+  [:td [:input {:name (str "2_" (:exerciseid e) "_skip")
+                :type :checkbox}]])
 
 (defn complete-plan [{:keys [db]} id]
   (html5
@@ -151,24 +157,14 @@
              [:table
               (html/cardio-tablehead "Skip?")
               (let [es (db/cardios-for-plan db id)]
-                (html/cardio-tablebody number-input-if-number
-                                       es
-                                       [[:td [:input {:name (str "2_" (:exerciseid es) "_skip")
-                                                       :type :checkbox}]]]
-                                       [(:exerciseid es)
-                                        :cardio]))]
+                (html/cardio-tablebody modifiable-input skip-input es))]
              [:table
               (html/weightlift-tablehead "Skip?")
               (let [es (db/weightlifts-for-plan db id)]
-                (html/weightlift-tablebody number-input-if-number
-                                           es
-                                           [[:td [:input {:name (str "1_" (:exerciseid es) "_skip")
-                                                           :type :checkbox}]]]
-                                           [(:exerciseid es)
-                                            :weightlift]))]
+                (html/weightlift-tablebody modifiable-input skip-input es))]
              [:input {:type :submit :value "Save plan"}])]))
 
-(defn- value-or-na [v]
+(defn- value-or-na [_ [k v] _]
   (if v v "N/A"))
 
 (defn history [{:keys [db]}]
@@ -190,10 +186,10 @@
             (when cardios
               [:table
                (html/cardio-tablehead)
-               (html/cardio-tablebody value-or-na cardios nil nil)])
+               (html/cardio-tablebody value-or-na (fn [_] nil) cardios :cardio)])
             (when weightlifts
               [:table
                (html/weightlift-tablehead)
-               (html/weightlift-tablebody value-or-na weightlifts nil nil)])])))]]))
+               (html/weightlift-tablebody value-or-na (fn [_] nil) weightlifts :weightlift)])])))]]))
 
 (def not-found (html5 "not found"))

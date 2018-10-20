@@ -25,26 +25,29 @@
               [:th "Level"]]
              extra-cols))
 
-(defn tablebody [defaults extra-cols]
+(defn tablebody [f extra-f es exercise-type keyseq]
   [:tbody
-   (map #(into [] (concat % extra-cols)) defaults)])
-
-(defn weightlift-tablebody [f es extra-cols extra-args]
-  (tablebody
    (for [e es]
      [:tr
-      (for [[_ v] (select-keys e [:name :sets :reps :weight])]
-        [:td (apply f (conj extra-args v))])])
-   extra-cols))
+      (for [[k v] (select-keys e keyseq)]
+        [:td (apply f [exercise-type [k v] (:exerciseid e)] )])
+      (extra-f e)])])
 
-(defn cardio-tablebody [f es extra-cols extra-args]
-  (tablebody
-   (for [{:keys [name duration distance highpulse lowpulse level] :as e} es]
-     [:tr
-      [:td (apply f (conj extra-args name))]
-      [:td (apply f (conj extra-args duration))]
-      [:td (apply f (conj extra-args distance))]
-      [:td (apply f (conj extra-args highpulse))]
-      [:td (apply f (conj extra-args lowpulse))]
-      [:td (apply f (conj extra-args level))]])
-   extra-cols))
+
+(defn cardio-tablebody [f extra-f es]
+  (tablebody f extra-f es :cardio [:name :duration :distance :highpulse :lowpulse :level]))
+
+(defn weightlift-tablebody [f extra-f es]
+  (tablebody f extra-f es :weightlift [:name :sets :reps :weight]))
+
+(defmacro defcurry [name fn-to-call & args]
+  `(defn ~name [args]
+     (partial (apply ~fn-to-call args))))
+
+;; (defcurry print-hello println "hello")
+
+;; TODO  Save plan does not work.
+
+;; (defcurry weightlift-tablebody tablebody [:name :sets :refs :weight])
+
+;; (defcurry cardio-tablebody tablebody [:name :duration :distance :highpulse :lowpulse :level])

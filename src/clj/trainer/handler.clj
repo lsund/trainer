@@ -47,7 +47,7 @@
        (re-matches #"2_[0-9]+_.*" s)))
 
 (defn save-plan-instance [db params]
-  (println params)
+  (println "Params:" params)
   (let [planid (-> params :plan util/parse-int)
         day (util/->localdate (:day params))
         weightlifts (for [[id props] (group-by :id (for [p (filter is-weightlift-property params)]
@@ -56,7 +56,9 @@
         cardios (for [[id props] (group-by :id (for [p (filter is-cardio-property params)]
                                                  (process-exercise-property p)))]
                   (make-exercise id props))]
-    (doseq [e weightlifts]
+    (println "Weightlifts: " weightlifts)
+    (println "Cardios: " cardios)
+    #_(doseq [e weightlifts]
       (when-not (:skip e)
         (db/add db
                 :doneweightlift
@@ -64,7 +66,7 @@
                         :planid planid
                         :exerciseid (:id e)}
                        (select-keys e [:sets :reps :weight])))))
-    (doseq [e cardios]
+    #_(doseq [e cardios]
       (when-not (:skip e)
         (db/add db
                 :donecardio
