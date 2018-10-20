@@ -67,7 +67,7 @@
              [:button.mui-btn "Save plan"])
     [:h2 "Existing plans"]
     [:ul
-     (for [p (db/all db :plan)]
+     (for [p (db/all-where db :plan "active = 't'")]
        [:li
         [:h3 (str (:name p) " completed " (:timescompleted p) " times")]
         [:table

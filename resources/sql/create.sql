@@ -31,7 +31,8 @@ CREATE TABLE Plan
 (
     id              SERIAL PRIMARY KEY,
     name            varchar(64) NOT NULL UNIQUE,
-    timescompleted  INT NOT NULL
+    timescompleted  INT NOT NULL,
+    active          BOOL NOT NULL
 );
 
 CREATE TABLE PlannedExercise

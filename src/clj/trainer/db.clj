@@ -48,6 +48,9 @@
 (defn all [db table]
   (j/query db [(str "SELECT * FROM " (name table))]))
 
+(defn all-where [db table clause]
+  (j/query db [(str "SELECT * FROM " (name table) " WHERE " clause)]))
+
 (defn all-done-weightlifts-with-name [db]
   (j/query db ["select
                 doneweightlift.day, doneweightlift.sets, doneweightlift.reps,
