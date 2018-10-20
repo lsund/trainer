@@ -130,7 +130,7 @@
     (apply include-js (:javascripts config))
     (apply include-css (:styles config))]))
 
-(defn number-input-if-number [v exerciseid exercisetype]
+(defn number-input-if-number [exerciseid exercisetype v]
   (cond (util/parse-int v) [:input {:name (str (if (= exercisetype :weightlift) "_1" "_2")
                                                exerciseid
                                                (str "_" 'v))
@@ -150,23 +150,22 @@
              [:input {:type :date :name "day" :required "true"}]
              [:table
               (html/cardio-tablehead "Skip?")
-              ;; TODO this is not pretty
               (let [es (db/cardios-for-plan db id)]
                 (html/cardio-tablebody number-input-if-number
                                        es
-                                       [:td [:input {:name (str "2_" (:exerciseid es) "_skip")
-                                                     :type :checkbox}]]
-                                       (:exerciseid es)
-                                       :cardio))]
+                                       [[:td [:input {:name (str "2_" (:exerciseid es) "_skip")
+                                                       :type :checkbox}]]]
+                                       [(:exerciseid es)
+                                        :cardio]))]
              [:table
               (html/weightlift-tablehead "Skip?")
               (let [es (db/weightlifts-for-plan db id)]
                 (html/weightlift-tablebody number-input-if-number
                                            es
-                                           [:td [:input {:name (str "1_" (:exerciseid es) "_skip")
-                                                         :type :checkbox}]]
-                                           (:exerciseid es)
-                                           :weightlift))]
+                                           [[:td [:input {:name (str "1_" (:exerciseid es) "_skip")
+                                                           :type :checkbox}]]]
+                                           [(:exerciseid es)
+                                            :weightlift]))]
              [:input {:type :submit :value "Save plan"}])]))
 
 (defn- value-or-na [v]
@@ -191,10 +190,10 @@
             (when cardios
               [:table
                (html/cardio-tablehead)
-               (html/cardio-tablebody value-or-na cardios)])
+               (html/cardio-tablebody value-or-na cardios nil nil)])
             (when weightlifts
               [:table
                (html/weightlift-tablehead)
-               (html/weightlift-tablebody value-or-na weightlifts nil)])])))]]))
+               (html/weightlift-tablebody value-or-na weightlifts nil nil)])])))]]))
 
 (def not-found (html5 "not found"))

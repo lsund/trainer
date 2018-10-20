@@ -25,18 +25,20 @@
               [:th "Level"]]
              extra-cols))
 
-(defn weightlift-tablebody [f es extra-col & extra-args]
+(defn tablebody [defaults extra-cols]
   [:tbody
-   (for [{:keys [name sets reps weight] :as e} es]
-     [:tr
-      [:td (apply f (conj extra-args name))]
-      [:td (apply f (conj extra-args sets))]
-      [:td (apply f (conj extra-args reps))]
-      [:td (apply f (conj extra-args weight))]
-      extra-col])])
+   (map #(into [] (concat % extra-cols)) defaults)])
 
-(defn cardio-tablebody [f es extra-col & extra-args]
-  [:tbody
+(defn weightlift-tablebody [f es extra-cols extra-args]
+  (tablebody
+   (for [e es]
+     [:tr
+      (for [[_ v] (select-keys e [:name :sets :reps :weight])]
+        [:td (apply f (conj extra-args v))])])
+   extra-cols))
+
+(defn cardio-tablebody [f es extra-cols extra-args]
+  (tablebody
    (for [{:keys [name duration distance highpulse lowpulse level] :as e} es]
      [:tr
       [:td (apply f (conj extra-args name))]
@@ -44,5 +46,5 @@
       [:td (apply f (conj extra-args distance))]
       [:td (apply f (conj extra-args highpulse))]
       [:td (apply f (conj extra-args lowpulse))]
-      [:td (apply f (conj extra-args level))]
-      extra-col])])
+      [:td (apply f (conj extra-args level))]])
+   extra-cols))
