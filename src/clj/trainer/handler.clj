@@ -35,14 +35,10 @@
          id))
 
 (defn is-weightlift-property [[s _]]
-  ;; `EXERCISETYPE_ ID_NAME` Example: `2_8_reps` means: the number of repetitions (reps) of a
-  ;; cardio exercise (2) of id (8)
   (and (string? s)
        (re-matches #"1_[0-9]+_.*" s)))
 
 (defn is-cardio-property [[s _]]
-  ;; `EXERCISETYPE_ ID_NAME` Example: `2_8_reps` means: the number of repetitions (reps) of a
-  ;; cardio exercise (2) of id (8)
   (and (string? s)
        (re-matches #"2_[0-9]+_.*" s)))
 
@@ -56,9 +52,7 @@
         cardios (for [[id props] (group-by :id (for [p (filter is-cardio-property params)]
                                                  (process-exercise-property p)))]
                   (make-exercise id props))]
-    (println "Weightlifts: " weightlifts)
-    (println "Cardios: " cardios)
-    #_(doseq [e weightlifts]
+    (doseq [e weightlifts]
       (when-not (:skip e)
         (db/add db
                 :doneweightlift
@@ -66,7 +60,7 @@
                         :planid planid
                         :exerciseid (:id e)}
                        (select-keys e [:sets :reps :weight])))))
-    #_(doseq [e cardios]
+    (doseq [e cardios]
       (when-not (:skip e)
         (db/add db
                 :donecardio

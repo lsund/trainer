@@ -25,20 +25,20 @@
               [:th "Level"]]
              extra-cols))
 
-(defn tablebody [f extra-f es exercise-type keyseq]
+(defn tablebody [f end-f es keyseq exercise-type]
   [:tbody
    (for [e es]
      [:tr
       (for [[k v] (select-keys e keyseq)]
-        [:td (apply f [exercise-type [k v] (:exerciseid e)] )])
-      (extra-f e)])])
+        [:td (apply f [[k v] (:exerciseid e) exercise-type] )])
+      (end-f e)])])
 
 
-(defn cardio-tablebody [f extra-f es]
-  (tablebody f extra-f es :cardio [:name :duration :distance :highpulse :lowpulse :level]))
+(defn cardio-tablebody [f end-f es]
+  (tablebody f end-f es [:name :duration :distance :highpulse :lowpulse :level] :cardio))
 
-(defn weightlift-tablebody [f extra-f es]
-  (tablebody f extra-f es :weightlift [:name :sets :reps :weight]))
+(defn weightlift-tablebody [f end-f es]
+  (tablebody f end-f es [:name :sets :reps :weight] :weightlift))
 
 (defmacro defcurry [name fn-to-call & args]
   `(defn ~name [args]
