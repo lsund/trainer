@@ -25,7 +25,7 @@
               [:th "Level"]]
              extra-cols))
 
-(defn tablebody [f end-f es keyseq exercise-type]
+(defn tablebody [keyseq exercise-type f end-f es]
   [:tbody
    (for [e es]
      [:tr
@@ -33,21 +33,8 @@
         [:td (apply f [[k v] (:exerciseid e) exercise-type] )])
       (end-f e)])])
 
+(def cardio-tablebody
+  (partial tablebody [:name :duration :distance :highpulse :lowpulse :level] :cardio))
 
-(defn cardio-tablebody [f end-f es]
-  (tablebody f end-f es [:name :duration :distance :highpulse :lowpulse :level] :cardio))
-
-(defn weightlift-tablebody [f end-f es]
-  (tablebody f end-f es [:name :sets :reps :weight] :weightlift))
-
-(defmacro defcurry [name fn-to-call & args]
-  `(defn ~name [args]
-     (partial (apply ~fn-to-call args))))
-
-;; (defcurry print-hello println "hello")
-
-;; TODO  Save plan does not work.
-
-;; (defcurry weightlift-tablebody tablebody [:name :sets :refs :weight])
-
-;; (defcurry cardio-tablebody tablebody [:name :duration :distance :highpulse :lowpulse :level])
+(def weightlift-tablebody
+  (partial tablebody [:name :sets :reps :weight] :weightlift))
