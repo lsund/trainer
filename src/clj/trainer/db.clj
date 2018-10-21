@@ -132,3 +132,8 @@
   (map :exerciseid
        (j/query db
                 ["SELECT exerciseid FROM plannedexercise WHERE planid=? and exercisetype=2" id])))
+
+(defn timeline [db column exerciseid]
+  (let [table (if (some #{column} [:sets :reps :weight]) "doneweightlift" "donecardio")]
+    (println column table exerciseid)
+    (j/query db [(str "SELECT day," (name column) " FROM " table " WHERE exerciseid = ?")  exerciseid])))
