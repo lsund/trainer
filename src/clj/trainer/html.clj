@@ -31,7 +31,7 @@
      [:tr
       (for [[k v] (select-keys e keyseq)]
         [:td (apply f [[k v] (:exerciseid e) etype] )])
-      (end-f e)])])
+      (end-f e etype)])])
 
 (def cardio-tablebody
   (partial tablebody [:name :duration :distance :highpulse :lowpulse :level] :cardio))
@@ -61,7 +61,7 @@
                             :min "0"}]])]))
 
 (defn add-to-plan-form [etype es]
-  (form-to [:post (str "/add-" etype "-to-plan")]
+  (form-to [:post (str "/add-" (name etype) "-to-plan")]
            [:select {:name etype}
             (for [e es]
               [:option {:value (:id e)} (:name e)])]

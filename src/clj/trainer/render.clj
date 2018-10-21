@@ -20,7 +20,7 @@
 
 (defn- existing-plans [{:keys [db] :as config}]
   [:ul
-   (for [p (db/all-where db :plan "active = 't'")]
+   (for [p (db/all db :plan) #_(db/all-where db :plan "active = 't'")]
      [:li
       [:h3 (str (:name p) " completed " (:timescompleted p) " times")]
       [:table
@@ -29,7 +29,7 @@
         (for [e (db/cardios-for-plan db (:id p))]
           (html/update-form :cardio
                             e
-                            [:exerciseid :name :duration :distence :lowpulse :level]))]]
+                            [:duration :distance :highpulse :lowpulse :level]))]]
       [:table
        (html/weightlift-tablehead)
        [:tbody
@@ -44,7 +44,7 @@
            [:h1 "Trainer"]
            [:p "This is a program for logging your gym results."]
            (html/add-exercise-form :weightlift [:sets :reps :weight])
-           (html/add-exercise-form :cardio [:name :duration :distance :highpulse :lowpulse :level])
+           (html/add-exercise-form :cardio [:duration :distance :highpulse :lowpulse :level])
            [:h2 "Existing plans"]
            (existing-plans config)
            [:h2 "Make a new plan"]
@@ -84,8 +84,8 @@
         (nil? v) "N/A"
         :default v))
 
-(defn- skip-optionally [e]
-  [:td [:input {:name (str "2_" (:exerciseid e) "_skip")
+(defn- skip-optionally [e etype]
+  [:td [:input {:name (str (db/exercise-type->id etype) "_" (:exerciseid e) "_skip")
                 :type :checkbox}]])
 
 (defn complete-plan [{:keys [db]} id]
@@ -129,10 +129,10 @@
                   (when cardios
                     [:table
                      (html/cardio-tablehead)
-                     (html/cardio-tablebody value-or-na (fn [_] nil) cardios)])
+                     (html/cardio-tablebody value-or-na (fn [& _] nil) cardios)])
                   (when weightlifts
                     [:table
                      (html/weightlift-tablehead)
-                     (html/weightlift-tablebody value-or-na (fn [_] nil) weightlifts)])])))]))
+                     (html/weightlift-tablebody value-or-na (fn [& _] nil) weightlifts)])])))]))
 
 (def not-found (html5 "not found"))
