@@ -34,7 +34,7 @@
        (html/weightlift-tablehead)
        [:tbody
         (for [e (db/weightlifts-for-plan db (:id p))]
-          (html/update-form :weightlift e [:reps :sets :weight]))]]])])
+          (html/update-form :weightlift e [:sets :reps :weight]))]]])])
 
 (defn index
   [{:keys [db] :as config} {:keys [weightlift-list cardio-list] :as session }]
@@ -45,8 +45,6 @@
            [:p "This is a program for logging your gym results."]
            (html/add-exercise-form :weightlift [:sets :reps :weight])
            (html/add-exercise-form :cardio [:duration :distance :highpulse :lowpulse :level])
-           [:h2 "Existing plans"]
-           (existing-plans config)
            [:h2 "Make a new plan"]
            (html/add-to-plan-form :weightlift (db/all db :weightlift))
            (html/add-to-plan-form :cardio (db/all db :cardio))
@@ -72,7 +70,9 @@
                        [:option {:value (:id e)} (:name e)])]
                     [:button.mui-btn "Start"])
            (form-to [:get "/history"]
-                    [:input {:type :submit :value "History"}])]))
+                    [:input {:type :submit :value "History"}])
+           [:h2 "Existing plans"]
+           (existing-plans config)]))
 
 (defn- modifiable-if-number [[k v] exerciseid etype]
   (cond (util/parse-int v) [:input {:name (str (db/exercise-type->id etype) "_"
