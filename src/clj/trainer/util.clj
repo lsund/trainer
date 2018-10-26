@@ -11,10 +11,8 @@
                                        (catch NumberFormatException _ nil))
     :default nil))
 
-(def date-string "yyyy-MM-dd")
-
 (defn string->localdate [s]
-  (java.time.LocalDate/parse s (java.time.format.DateTimeFormatter/ofPattern date-string)))
+  (java.time.LocalDate/parse s (java.time.format.DateTimeFormatter/ofPattern "yyy-MM-dd")))
 
 (defn ->localdate
   [date]

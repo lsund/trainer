@@ -73,3 +73,19 @@ CREATE TABLE DoneCardio
     FOREIGN KEY     (planid) REFERENCES PLAN (id),
     FOREIGN KEY     (exerciseid) REFERENCES Cardio (id)
 );
+
+CREATE TABLE SquashOpponent
+(
+    id              SERIAL PRIMARY KEY,
+    name            varchar(64) UNIQUE
+);
+
+CREATE TABLE SquashResult
+(
+    id              SERIAL PRIMARY KEY,
+    day             DATE NOT NULL,
+    opponentid      INT NOT NULL,
+    myscore         INT NOT NULL,
+    opponentScore   INT NOT NULL,
+    FOREIGN KEY     (opponentid) REFERENCES SquashOpponent (id)
+);

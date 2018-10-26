@@ -43,7 +43,6 @@
        (re-matches #"2_[0-9]+_.*" s)))
 
 (defn save-plan-instance [db params]
-  (println "Params:" params)
   (let [planid (-> params :plan util/parse-int)
         day (util/->localdate (:day params))
         weightlifts (for [[id props] (group-by :id (for [p (filter is-weightlift-property params)]
