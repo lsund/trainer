@@ -134,7 +134,8 @@
                  {:day (util/->localdate day)
                   :opponentid (util/parse-int opponentid)
                   :myscore (util/parse-int myscore)
-                  :opponentscore (util/parse-int opponentscore)}))
+                  :opponentscore (util/parse-int opponentscore)})
+         (redirect "/"))
    (r/resources "/")
    (r/not-found render/not-found)))
 

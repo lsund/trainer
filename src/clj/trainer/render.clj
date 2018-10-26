@@ -57,9 +57,9 @@
              (for [e (db/subset db :weightlift (mapv util/parse-int weightlift-list))]
                [:tr
                 [:td (:name e)]])
-             (for [id cardio-list]
+             (for [e (db/subset db :cardio (mapv util/parse-int cardio-list))]
                [:tr
-                [:td (id->name db :cardio id)]])]]
+                [:td (:name e)]])]]
            (form-to [:post "/save-plan"]
                     [:input {:name "name" :type :text :placeholder "Plan name"}]
                     [:button.mui-btn "Save plan"])

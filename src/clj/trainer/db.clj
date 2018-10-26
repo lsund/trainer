@@ -13,7 +13,6 @@
    :dbname (:name config)
    :user "postgres"})
 
-
 (defrecord Db [db db-config]
   c/Lifecycle
 

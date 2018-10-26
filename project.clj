@@ -10,6 +10,7 @@
                  [org.clojure/clojurescript "1.9.946"]
                  [org.clojure/core.async  "0.4.474"]
                  [org.clojure/tools.namespace "0.2.11"]
+                 [org.clojure/data.csv "0.1.4"]
 
                  ;; Database
                  [org.clojure/java.jdbc "0.7.6"]
