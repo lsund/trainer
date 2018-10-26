@@ -111,6 +111,10 @@
 (defn- value-or-na [[_ v] _ _]
   (if v v "N/A"))
 
+(defn- const [x & _] x)
+
+(defn- const-nil [& _] nil)
+
 (defn history [{:keys [db] :as config}]
   (layout config
           "History"
@@ -129,10 +133,22 @@
                   (when cardios
                     [:table
                      (html/cardio-tablehead)
-                     (html/cardio-tablebody value-or-na (fn [& _] nil) cardios)])
+                     (html/cardio-tablebody value-or-na const-nil cardios)])
                   (when weightlifts
                     [:table
                      (html/weightlift-tablehead)
-                     (html/weightlift-tablebody value-or-na (fn [& _] nil) weightlifts)])])))]))
+                     (html/weightlift-tablebody value-or-na const-nil weightlifts)])])))]))
+
+(defn squash [{:keys [db] :as config}]
+  (layout config
+          "Squash"
+          [:div
+           [:table
+            (html/tablehead [:tr
+                             [:th "Day"]
+                             [:th "Opponent"]
+                             [:th "---"]
+                             [:th " "]])
+            (html/tablebody [:day :name :myscore :opponentscore] nil const const-nil  (db/squash-results db))]]))
 
 (def not-found (html5 "not found"))

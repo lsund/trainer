@@ -76,6 +76,8 @@
         (render/index config session))
    (GET "/history" []
         (render/history config))
+   (GET "/squash" []
+        (render/squash config))
    (POST "/add-weightlift" [name sets reps weight]
          (db/add db :weightlift {:name name
                                  :sets (util/parse-int sets)

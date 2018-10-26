@@ -128,6 +128,16 @@
              and planid = ?
              and exercisetype = 2" id]))
 
+(defn squash-results [db]
+  (j/query db
+           ["select name,
+                    squashresult.day,
+                    squashresult.myscore,
+                    squashresult.opponentscore
+             from squashresult
+             inner join squashopponent
+             on squashresult.opponentid = squashopponent.id"]))
+
 (defn cardio-ids-for-plan [db id]
   (map :exerciseid
        (j/query db
