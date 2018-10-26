@@ -127,6 +127,14 @@
              (assoc :session nil)))
    (GET "/complete-plan" [plan]
         (render/complete-plan config (util/parse-int plan)))
+   (POST "/add-squash-result" [day opponentid myscore opponentscore]
+         (println (util/parse-int opponentid))
+         (db/add db
+                 :squashresult
+                 {:day (util/->localdate day)
+                  :opponentid (util/parse-int opponentid)
+                  :myscore (util/parse-int myscore)
+                  :opponentscore (util/parse-int opponentscore)}))
    (r/resources "/")
    (r/not-found render/not-found)))
 

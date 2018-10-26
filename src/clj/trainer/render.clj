@@ -71,6 +71,8 @@
                     [:button.mui-btn "Start"])
            (form-to [:get "/history"]
                     [:input {:type :submit :value "History"}])
+           (form-to [:get "/squash"]
+                    [:input {:type :submit :value "Squash Results"}])
            [:h2 "Existing plans"]
            (existing-plans config)]))
 
@@ -143,12 +145,25 @@
   (layout config
           "Squash"
           [:div
+           [:h3 "Add Squash Result"]
+           (form-to [:post "/add-squash-result"]
+                    [:input {:name "day" :type :date}]
+                    [:select {:name "opponentid"}
+                     (for [e (db/all db :squashopponent)]
+                       [:option {:value (:id e)} (:name e)])]
+                    [:input {:name "myscore" :type :number}]
+                    [:input {:name "opponentscore" :type :number}]
+                    [:input.hidden {:type :submit}])
            [:table
             (html/tablehead [:tr
                              [:th "Day"]
                              [:th "Opponent"]
                              [:th "---"]
                              [:th " "]])
-            (html/tablebody [:day :name :myscore :opponentscore] nil const const-nil  (db/squash-results db))]]))
+            (html/tablebody [:day :name :myscore :opponentscore]
+                            nil
+                            const
+                            const-nil
+                            (reverse (sort-by :day (db/squash-results db))))]]))
 
 (def not-found (html5 "not found"))

@@ -12,7 +12,7 @@
     :default nil))
 
 (defn string->localdate [s]
-  (java.time.LocalDate/parse s (java.time.format.DateTimeFormatter/ofPattern "yyy-MM-dd")))
+  (java.time.LocalDate/parse s (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd")))
 
 (defn ->localdate
   [date]
