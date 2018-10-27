@@ -18,7 +18,8 @@
 
    [trainer.db :as db]
    [trainer.util :as util]
-   [trainer.render :as render]))
+   [trainer.render :as render]
+   [trainer.plotter :as plotter]))
 
 (defn process-exercise-property [[k v]]
   (let [[_ id prop & _] (string/split k #"_")]
@@ -78,6 +79,12 @@
         (render/history config))
    (GET "/squash" []
         (render/squash config))
+   (GET "/plotter" []
+        (render/plotter config))
+   (GET "/plot" [eid weight reps]
+        (plotter/generate db (util/parse-int eid) {:weight weight
+                                                   :reps reps})
+        (redirect "/plotter"))
    (POST "/add-weightlift" [name sets reps weight]
          (db/add db :weightlift {:name name
                                  :sets (util/parse-int sets)
@@ -128,7 +135,6 @@
    (GET "/complete-plan" [plan]
         (render/complete-plan config (util/parse-int plan)))
    (POST "/add-squash-result" [day opponentid myscore opponentscore]
-         (println (util/parse-int opponentid))
          (db/add db
                  :squashresult
                  {:day (util/->localdate day)

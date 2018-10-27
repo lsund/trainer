@@ -158,12 +158,33 @@
             (html/tablehead [:tr
                              [:th "Day"]
                              [:th "Opponent"]
-                             [:th "---"]
+                             [:th "---"](db/all db :weightlift)
                              [:th " "]])
             (html/tablebody [:day :name :myscore :opponentscore]
                             nil
                             const
                             const-nil
                             (reverse (sort-by :day (db/squash-results db))))]]))
+
+(defn plotter [{:keys [db] :as config}]
+  (layout config
+          "Plotter"
+          [:div
+           [:h3 "Plot Exercise"]
+           (form-to [:get "/plot"]
+                    [:select {:name "eid"}
+                     [:div
+                      (for [e (concat (db/all db :weightlift)
+                                      (db/all db :cardio))]
+                        [:option {:value (:id e)} (:name e)])]]
+                    [:div
+                     [:input {:name :weight
+                              :type :checkbox} "Weight"]]
+                    [:div
+                     [:input {:name :reps
+                              :type :checkbox} "Reps"]]
+                    [:input.hidden {:type :submit}]
+                    [:button.mui-btn "Generate plot"])
+           [:img {:src "img/result.png"}]]))
 
 (def not-found (html5 "not found"))

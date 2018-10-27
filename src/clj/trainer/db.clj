@@ -82,6 +82,13 @@
   (if (not-empty ids)
     (j/query db [(str "SELECT * FROM " (name table) " WHERE id IN " (vec->sql-list ids))])))
 
+(defn range [db table column eid]
+  (first (j/query db
+                  [(str "select min(" (name column) "), max(" (name column) ") from " (name table) " where exerciseid=?") eid])))
+
+
+
+
 (defn all-done-weightlifts-with-name [db]
   (j/query db ["select
                 doneweightlift.day, doneweightlift.sets, doneweightlift.reps,
