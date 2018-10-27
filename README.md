@@ -1,5 +1,5 @@
 # Trainer
 
-This is a WEB UI for gym logging etc
+Personal exercise and sports management software
 
 
