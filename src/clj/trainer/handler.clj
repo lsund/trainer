@@ -78,8 +78,10 @@
         (render/history config))
    (GET "/squash" []
         (render/squash config))
-   (GET "/plotter" [eid weight reps]
-        (render/plotter config (util/parse-int eid) weight reps))
+   (GET "/plot-weightlift" [eid weight reps]
+        (render/plot-weightlift config (util/parse-int eid) weight reps))
+   (GET "/plot-cardio" [eid duration level]
+        (render/plot-cardio config (util/parse-int eid) duration level))
    (POST "/add-weightlift" [name sets reps weight]
          (db/add db :weightlift {:name name
                                  :sets (util/parse-int sets)
