@@ -21,9 +21,9 @@
     (apply include-css (:styles config))
     (apply include-js (:javascripts config))]))
 
-(defn- existing-plans [{:keys [db] :as config}]
+(defn- active-plans [{:keys [db] :as config}]
   [:ul
-   (for [p (db/all db :plan) #_(db/all-where db :plan "active = 't'")]
+   (for [p (db/all-where db :plan "active = 't'")]
      [:li
       [:h3 (str (:name p) " completed " (:timescompleted p) " times")]
       [:table
@@ -44,8 +44,7 @@
   (layout config
           "Overview"
           [:div
-           [:h1 "Trainer"]
-           [:p "This is a program for logging your gym results."]
+           [:h2 "Add cardio or weightlift exercises"]
            (html/add-exercise-form :weightlift [:sets :reps :weight])
            (html/add-exercise-form :cardio [:duration :distance :highpulse :lowpulse :level])
            [:h2 "Make a new plan"]
@@ -69,15 +68,11 @@
            [:h3 "Complete a plan"]
            (form-to [:get "/complete-plan"]
                     [:select {:name "plan"}
-                     (for [e (db/all db :plan)]
+                     (for [e (db/all-where db :plan "active='t'")]
                        [:option {:value (:id e)} (:name e)])]
                     [:button.mui-btn "Start"])
-           (form-to [:get "/history"]
-                    [:input {:type :submit :value "History"}])
-           (form-to [:get "/squash"]
-                    [:input {:type :submit :value "Squash Results"}])
-           [:h2 "Existing plans"]
-           (existing-plans config)]))
+           [:h2 "Active plans"]
+           (active-plans config)]))
 
 (defn- modifiable-if-number [[k v] exerciseid etype]
   (cond (util/parse-int v) [:input {:name (str (db/exercise-type->id etype) "_"

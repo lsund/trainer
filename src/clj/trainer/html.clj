@@ -85,4 +85,4 @@
            [:select {:name etype}
             (for [e es]
               [:option {:value (:id e)} (:name e)])]
-           [:button.mui-btn "Add to plan"]))
+           [:button.mui-btn "Add to current plan"]))
