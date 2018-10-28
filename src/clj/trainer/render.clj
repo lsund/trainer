@@ -216,7 +216,9 @@
                                   :checked (when (= "on" snd) "true")} snd-title]]
                         [:input.hidden {:type :submit}]
                         [:button.mui-btn "Generate plot"])
-               [:img {:src (str "/img/" (:uuid plot-result) ".png")}]]))))
+               (if-let [uuid (:uuid plot-result)]
+                 [:img {:src (str "/img/" uuid ".png")}]
+                 [:p "Use the button above to generate a graph"])]))))
 
 (defmulti plot
   (fn [params]

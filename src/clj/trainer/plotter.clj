@@ -73,7 +73,9 @@ plot 'data/%s.csv' using 1:2 t \"%s\" lw 5"
                     :weightlift [:weight :reps]
                     :cardio [:duration :level]
                     nil)
-        rows (sort-by :day (db/all-where db (keyword (str "done" (name etype))) (str "exerciseid=" eid)))
+        rows (sort-by :day (db/all-where db
+                                         (keyword (str "done" (name etype)))
+                                         (str "exerciseid=" eid)))
         fst-data (map #(vals (select-keys % [:day fst])) rows)
         snd-data (map #(vals (select-keys % [:day snd])) rows)
         data (case mode
