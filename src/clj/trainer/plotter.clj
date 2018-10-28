@@ -30,7 +30,7 @@ set format x \"%%Y-%%m-%%d\"
 set xrange ['%s':'%s']
 set yrange [%d:%d]
 set xtics 7000000
-plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
+plot 'data/%s.csv' using 1:2 t \"%s\" lw 5"
    title
    ylabel
    uuid
@@ -38,10 +38,11 @@ plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
    (-> x-range :max util/fmt-date)
    (first (padding (:min y-range) (:max y-range)))
    (second (padding (:min y-range) (:max y-range)))
+   uuid
    mode))
 
-(defn write-csv [res]
-  (with-open [writer (io/writer "data/plotdata.csv")]
+(defn write-csv [res uuid]
+  (with-open [writer (io/writer (str "data/" uuid ".csv"))]
     (csv/write-csv writer res)))
 
 (defn- score [[k1 fst] [k2 snd]]
@@ -68,12 +69,9 @@ plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
   (fn [params]
     (:type params)))
 
-(defn clear-img-dir []
-  (doseq [file (fs/list-dir "resources/public/img")]
-    (fs/delete file)))
-
 (defmethod generate :weightlift [{:keys [db eid mode]}]
-  (clear-img-dir)
+  (util/clear-dir "resources/public/img")
+  (util/clear-dir "data")
   (fs/mkdir "data")
   (let [rows (sort-by :day (db/all-where db :doneweightlift (str "exerciseid=" eid)))
         weight-data (map #(vals (select-keys % [:day :weight])) rows)
@@ -84,19 +82,20 @@ plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
                :reps reps-data)
         ylabel (mode->ylabel mode)
         uuid (util/uuid)]
-    (write-csv data)
-    (spit "data/plot.gnuplot"
+    (write-csv data uuid)
+    (spit (str "data/" uuid ".gnuplot")
           (make-gnuplot-template {:uuid uuid
                                   :title (:name (db/element db :weightlift eid))
                                   :ylabel ylabel
                                   :x-range (db/range db :doneweightlift :day eid)
                                   :y-range (data->range data)
                                   :mode mode}))
-    (shell/sh "gnuplot" "data/plot.gnuplot")
+    (shell/sh "gnuplot" (str "data/" uuid ".gnuplot"))
     uuid))
 
 (defmethod generate :cardio [{:keys [db eid mode]}]
-  (clear-img-dir)
+  (util/clear-dir "resources/public/img")
+  (util/clear-dir "data")
   (fs/mkdir "data")
   (let [rows (sort-by :day (db/all-where db :donecardio (str "exerciseid=" eid)))
         duration-data (map #(vals (select-keys % [:day :duration])) rows)
@@ -108,13 +107,13 @@ plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
         ylabel (mode->ylabel mode)
         uuid (util/uuid)]
 
-    (write-csv data)
-    (spit "data/plot.gnuplot"
+    (write-csv data uuid)
+    (spit (str "data/" uuid ".gnuplot")
           (make-gnuplot-template {:uuid uuid
                                   :title (:name (db/element db :cardio eid))
                                   :ylabel ylabel
                                   :x-range (db/range db :donecardio :day eid)
                                   :y-range (data->range data)
                                   :mode mode}))
-    (shell/sh "gnuplot" "data/plot.gnuplot")
+    (shell/sh "gnuplot" (str "data/" uuid ".gnuplot"))
     uuid))

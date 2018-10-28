@@ -196,7 +196,7 @@
                                           :cardio ["Duration" "Level"]
                                           nil)]
               [:div
-               [:div.error {:emsg plot-result}]
+               [:div.error (:emsg plot-result)]
                [:h3 (str  "Plot " (name etype) " exercise")]
                (form-to [:get (str "/plot/" (name etype))]
                         [:select {:name "eid"}

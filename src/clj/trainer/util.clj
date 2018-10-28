@@ -1,6 +1,7 @@
 (ns trainer.util
   "Namespace for utilities"
-  (:require [clojure.string :as s]))
+  (:require [clojure.string :as s]
+            [me.raynes.fs :as fs]))
 
 (defn stringify [k] (-> k name s/capitalize))
 
@@ -36,3 +37,7 @@
 
 (defn uuid []
   (str (java.util.UUID/randomUUID)))
+
+(defn clear-dir [dirname]
+  (doseq [file (fs/list-dir dirname)]
+    (fs/delete file)))
