@@ -18,8 +18,7 @@
 
    [trainer.db :as db]
    [trainer.util :as util]
-   [trainer.render :as render]
-   [trainer.plotter :as plotter]))
+   [trainer.render :as render]))
 
 (defn process-exercise-property [[k v]]
   (let [[_ id prop & _] (string/split k #"_")]
@@ -79,12 +78,8 @@
         (render/history config))
    (GET "/squash" []
         (render/squash config))
-   (GET "/plotter" []
-        (render/plotter config))
-   (GET "/plot" [eid weight reps]
-        (plotter/generate db (util/parse-int eid) {:weight weight
-                                                   :reps reps})
-        (redirect "/plotter"))
+   (GET "/plotter" [eid weight reps]
+        (render/plotter config (util/parse-int eid) weight reps))
    (POST "/add-weightlift" [name sets reps weight]
          (db/add db :weightlift {:name name
                                  :sets (util/parse-int sets)

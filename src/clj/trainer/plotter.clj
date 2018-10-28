@@ -6,12 +6,11 @@
             [trainer.db :as db]
             [trainer.util :as util]))
 
-(defn score [weight reps] (* weight reps))
-
 (defn padding [x y]
   (let [sum (+ x y)]
     [(- x (quot sum 5))
-     (+ y (quot sum 5))]))
+     (let [y* (+ y (quot sum 5))]
+       (if (zero? y*) 1 y*))]))
 
 (defn make-gnuplot-template [{:keys [title ylabel x-range y-range mode]}]
   (format
@@ -31,7 +30,7 @@ set format x \"%%Y-%%m-%%d\"
 set xrange ['%s':'%s']
 set yrange [%d:%d]
 set xtics 7000000
-plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 3"
+plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
    title
    ylabel
    (-> x-range :min util/fmt-date)
@@ -44,22 +43,36 @@ plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 3"
   (with-open [writer (io/writer "data/plotdata.csv")]
     (csv/write-csv writer res)))
 
-(defn generate [db eid props]
+(defn- score [[d1 weight] [d2 reps]]
+  (if (= d1 d2)
+    [d1 (+ weight reps)]
+    nil))
+
+(defn- data->range [data]
+  {:max (second (apply max-key second data))
+   :min (second (apply min-key second data))})
+
+(defn- mode->ylabel [mode]
+  (case mode
+    :both "Score"
+    :weight "Kg"
+    :reps "Number"))
+
+(defn generate [db eid mode]
   (fs/mkdir "data")
-  (let [use-weight (= (:weight props) "on")
-        use-reps (= (:reps props) "on")
-        mode (cond
-               (and use-weight use-reps) :both
-               use-weight :weight
-               use-reps :reps
-               :default :none)
-        data (map  #(vals (select-keys % [:day mode]))
-                   (sort-by :day (db/all-where db :doneweightlift (str "exerciseid=" eid))))]
+  (let [rows (sort-by :day (db/all-where db :doneweightlift (str "exerciseid=" eid)))
+        weight-data (map #(vals (select-keys % [:day :weight])) rows)
+        reps-data (map #(vals (select-keys % [:day :reps])) rows)
+        data (case mode
+               :both (filter some? (map score weight-data reps-data))
+               :weight weight-data
+               :reps reps-data)
+        ylabel (mode->ylabel mode)]
     (write-csv data)
     (spit "data/plot.gnuplot"
           (make-gnuplot-template {:title (:name (db/element db :weightlift eid))
-                                  :ylabel (string/capitalize (name mode))
+                                  :ylabel ylabel
                                   :x-range (db/range db :doneweightlift :day eid)
-                                  :y-range (db/range db :doneweightlift mode eid)
+                                  :y-range (data->range data)
                                   :mode mode})))
   (shell/sh "gnuplot" "data/plot.gnuplot"))

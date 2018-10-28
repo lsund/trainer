@@ -6,7 +6,8 @@
    [hiccup.form :refer [form-to]]
    [hiccup.page :refer [html5 include-css include-js]]
    [trainer.util :as util]
-   [trainer.html :as html]))
+   [trainer.html :as html]
+   [trainer.plotter :as plotter]))
 
 (defn- layout
   [config title content]
@@ -166,23 +167,38 @@
                             const-nil
                             (reverse (sort-by :day (db/squash-results db))))]]))
 
-(defn plotter [{:keys [db] :as config}]
+(defn- maybe-regenerate-plot [db eid weight reps]
+  (let [use-weight (= weight "on")
+        use-reps (= reps "on")
+        mode (cond
+               (and use-weight use-reps) :both
+               use-weight :weight
+               use-reps :reps
+               :default :none)]
+    (when (not= mode :none)
+      (plotter/generate db (util/parse-int eid) mode))))
+
+(defn plotter [{:keys [db] :as config} eid weight reps]
+  (maybe-regenerate-plot db eid weight reps)
   (layout config
           "Plotter"
           [:div
            [:h3 "Plot Exercise"]
-           (form-to [:get "/plot"]
+           (form-to [:get "/plotter"]
                     [:select {:name "eid"}
                      [:div
-                      (for [e (concat (db/all db :weightlift)
-                                      (db/all db :cardio))]
-                        [:option {:value (:id e)} (:name e)])]]
+                      (for [e (db/all db :weightlift)]
+                        (if (= (:id e) eid)
+                          [:option {:value (:id e) :selected "selected"} (:name e)]
+                          [:option {:value (:id e)} (:name e)]))]]
                     [:div
                      [:input {:name :weight
-                              :type :checkbox} "Weight"]]
+                              :type :checkbox
+                              :checked (when (= "on" weight) "true")} "Weight"]]
                     [:div
                      [:input {:name :reps
-                              :type :checkbox} "Reps"]]
+                              :type :checkbox
+                              :checked (when (= "on" reps) "true")} "Reps"]]
                     [:input.hidden {:type :submit}]
                     [:button.mui-btn "Generate plot"])
            [:img {:src "img/result.png"}]]))
