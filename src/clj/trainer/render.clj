@@ -182,62 +182,66 @@
         :type etype
         :mode mode}))))
 
-(defn plot-weightlift [{:keys [db] :as config} eid weight reps]
-  (maybe-regenerate-plot db eid :weightlift weight reps)
+(defmulti plot
+  (fn [params]
+    (get-in params [:config :etype])))
+
+(defmethod plot :weightlift [{:keys [config eid fst snd]}]
+  (maybe-regenerate-plot (:db config) eid :weightlift fst snd)
   (layout config
           "Weightlift Plotter"
           [:div
            (form-to [:get "/"]
                     [:input {:type :submit :value "Back"}])
-           (form-to [:get "/plot-cardio"]
+           (form-to [:get "/plot/cardio"]
                     [:input {:type :submit :value "Plot Cardio Exercise"}])
            [:h3 "Plot Weightlift Exercise"]
-           (form-to [:get "/plot-weightlift"]
+           (form-to [:get "/plot/weightlift"]
                     [:select {:name "eid"}
                      [:div
-                      (for [e (db/all db :weightlift)]
+                      (for [e (db/all (:db config) :weightlift)]
                         (if (= (:id e) eid)
                           [:option {:value (:id e) :selected "selected"} (:name e)]
                           [:option {:value (:id e)} (:name e)]))]]
                     [:div
-                     [:input {:name :weight
+                     [:input {:name :fst
                               :type :checkbox
-                              :checked (when (= "on" weight) "true")} "Weight"]]
+                              :checked (when (= "on" fst) "true")} "Weight"]]
                     [:div
-                     [:input {:name :reps
+                     [:input {:name :snd
                               :type :checkbox
-                              :checked (when (= "on" reps) "true")} "Reps"]]
+                              :checked (when (= "on" snd) "true")} "Reps"]]
                     [:input.hidden {:type :submit}]
                     [:button.mui-btn "Generate plot"])
-           [:img {:src "img/result.png"}]]))
+           [:img {:src "/img/result.png"}]]))
 
-(defn plot-cardio [{:keys [db] :as config} eid duration level]
-  (maybe-regenerate-plot db eid :cardio duration level)
+(defmethod plot :cardio [{:keys [config eid fst snd]}]
+  (maybe-regenerate-plot (:db config) eid :cardio fst snd)
   (layout config
           "Cardio Plotter"
           [:div
            (form-to [:get "/"]
                     [:input {:type :submit :value "Back"}])
-           (form-to [:get "/plot-weightlift"]
+           (form-to [:get "/plot/weightilft"]
                     [:input {:type :submit :value "Plot Weightlift Exercise"}])
            [:h3 "Plot Cardio Exercise"]
-           (form-to [:get "/plot-cardio"]
+           (form-to [:get "/plot/cardio"]
                     [:select {:name "eid"}
                      [:div
-                      (for [e (db/all db :cardio)]
+                      (for [e (db/all (:db config) :cardio)]
                         (if (= (:id e) eid)
                           [:option {:value (:id e) :selected "selected"} (:name e)]
                           [:option {:value (:id e)} (:name e)]))]]
                     [:div
-                     [:input {:name :duration
+                     [:input {:name :fst
                               :type :checkbox
-                              :checked (when (= "on" duration) "true")} "Duration"]]
+                              :checked (when (= "on" fst) "true")} "Duration"]]
                     [:div
-                     [:input {:name :level
+                     [:input {:name :snd
                               :type :checkbox
-                              :checked (when (= "on" level) "true")} "Level"]]
+                              :checked (when (= "on" snd) "true")} "Level"]]
                     [:input.hidden {:type :submit}]
                     [:button.mui-btn "Generate plot"])
-           [:img {:src "img/result.png"}]]))
+           [:img {:src "/img/result.png"}]]))
 
 (def not-found (html5 "not found"))

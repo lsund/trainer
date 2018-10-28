@@ -78,10 +78,13 @@
         (render/history config))
    (GET "/squash" []
         (render/squash config))
-   (GET "/plot-weightlift" [eid weight reps]
-        (render/plot-weightlift config (util/parse-int eid) weight reps))
-   (GET "/plot-cardio" [eid duration level]
-        (render/plot-cardio config (util/parse-int eid) duration level))
+   (GET "/plot/:etype" [eid fst snd etype]
+        (render/plot {:config (assoc config :etype (keyword etype))
+                      :eid (util/parse-int eid)
+                      :fst fst
+                      :snd snd}))
+   (GET "/plot-cardio" [eid fst snd]
+        (render/plot-cardio config (util/parse-int eid) fst snd))
    (POST "/add-weightlift" [name sets reps weight]
          (db/add db :weightlift {:name name
                                  :sets (util/parse-int sets)
