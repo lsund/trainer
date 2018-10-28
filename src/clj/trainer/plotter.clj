@@ -68,7 +68,12 @@ plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
   (fn [params]
     (:type params)))
 
+(defn clear-img-dir []
+  (doseq [file (fs/list-dir "resources/public/img")]
+    (fs/delete file)))
+
 (defmethod generate :weightlift [{:keys [db eid mode]}]
+  (clear-img-dir)
   (fs/mkdir "data")
   (let [rows (sort-by :day (db/all-where db :doneweightlift (str "exerciseid=" eid)))
         weight-data (map #(vals (select-keys % [:day :weight])) rows)
@@ -91,6 +96,7 @@ plot 'data/plotdata.csv' using 1:2 t \"%s\" lw 5"
     uuid))
 
 (defmethod generate :cardio [{:keys [db eid mode]}]
+  (clear-img-dir)
   (fs/mkdir "data")
   (let [rows (sort-by :day (db/all-where db :donecardio (str "exerciseid=" eid)))
         duration-data (map #(vals (select-keys % [:day :duration])) rows)
