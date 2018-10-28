@@ -57,63 +57,48 @@ plot 'data/%s.csv' using 1:2 t \"%s\" lw 5"
     {:max max
      :min min}))
 
-(defn- mode->ylabel [mode]
-  (case mode
-    :both "Score"
-    :weight "Kg"
-    :duration "Time"
-    :level "Level"
-    :reps "Number"))
+(defn- mode->ylabel [etype mode]
+  (cond
+    (= mode :both) "Score"
+    (and (= mode first) (= etype :weightlift)) "Kg"
+    (and (= mode first) (= etype :cardio)) "Time"
+    (and (= mode second) (= etype :weightlift)) "Number"
+    (and (= mode second) (= etype :cardio)) "Level"))
+
+(defn- generate-aux [etype {:keys [db eid mode]}]
+  (util/clear-dir "resources/public/img")
+  (util/clear-dir "data")
+  (fs/mkdir "data")
+  (let [[fst snd] (case etype
+                    :weightlift [:weight :reps]
+                    :cardio [:duration :level]
+                    nil)
+        rows (sort-by :day (db/all-where db (keyword (str "done" (name etype))) (str "exerciseid=" eid)))
+        fst-data (map #(vals (select-keys % [:day fst])) rows)
+        snd-data (map #(vals (select-keys % [:day snd])) rows)
+        data (case mode
+               :both (filter some? (map score fst-data snd-data))
+               :fst (filter (comp some? second) fst-data)
+               :snd (filter (comp some? second) snd-data))
+        ylabel (mode->ylabel etype mode)
+        uuid (util/uuid)]
+    (write-csv data uuid)
+    (spit (str "data/" uuid ".gnuplot")
+          (make-gnuplot-template {:uuid uuid
+                                  :title (:name (db/element db etype eid))
+                                  :ylabel ylabel
+                                  :x-range (db/range db (keyword (str "done" (name etype))) :day eid)
+                                  :y-range (data->range data)
+                                  :mode mode}))
+    (shell/sh "gnuplot" (str "data/" uuid ".gnuplot"))
+    uuid))
 
 (defmulti generate
   (fn [params]
     (:type params)))
 
-(defmethod generate :weightlift [{:keys [db eid mode]}]
-  (util/clear-dir "resources/public/img")
-  (util/clear-dir "data")
-  (fs/mkdir "data")
-  (let [rows (sort-by :day (db/all-where db :doneweightlift (str "exerciseid=" eid)))
-        weight-data (map #(vals (select-keys % [:day :weight])) rows)
-        reps-data (map #(vals (select-keys % [:day :reps])) rows)
-        data (case mode
-               :both (filter some? (map score weight-data reps-data))
-               :weight weight-data
-               :reps reps-data)
-        ylabel (mode->ylabel mode)
-        uuid (util/uuid)]
-    (write-csv data uuid)
-    (spit (str "data/" uuid ".gnuplot")
-          (make-gnuplot-template {:uuid uuid
-                                  :title (:name (db/element db :weightlift eid))
-                                  :ylabel ylabel
-                                  :x-range (db/range db :doneweightlift :day eid)
-                                  :y-range (data->range data)
-                                  :mode mode}))
-    (shell/sh "gnuplot" (str "data/" uuid ".gnuplot"))
-    uuid))
+(defmethod generate :weightlift [params]
+  (generate-aux :weightlift params))
 
-(defmethod generate :cardio [{:keys [db eid mode]}]
-  (util/clear-dir "resources/public/img")
-  (util/clear-dir "data")
-  (fs/mkdir "data")
-  (let [rows (sort-by :day (db/all-where db :donecardio (str "exerciseid=" eid)))
-        duration-data (map #(vals (select-keys % [:day :duration])) rows)
-        level-data (map #(vals (select-keys % [:day :level])) rows)
-        data (case mode
-               :both (filter some? (map score duration-data level-data))
-               :duration (filter (comp some? second) duration-data)
-               :level (filter (comp some? second) level-data))
-        ylabel (mode->ylabel mode)
-        uuid (util/uuid)]
-
-    (write-csv data uuid)
-    (spit (str "data/" uuid ".gnuplot")
-          (make-gnuplot-template {:uuid uuid
-                                  :title (:name (db/element db :cardio eid))
-                                  :ylabel ylabel
-                                  :x-range (db/range db :donecardio :day eid)
-                                  :y-range (data->range data)
-                                  :mode mode}))
-    (shell/sh "gnuplot" (str "data/" uuid ".gnuplot"))
-    uuid))
+(defmethod generate :cardio [params]
+  (generate-aux :cardio params))

@@ -174,8 +174,8 @@
         use-snd (= snd "on")
         mode (cond
                (and use-fst use-snd) :both
-               use-fst (if (= etype :weightlift) :weight :duration)
-               use-snd (if (= etype :weightlift) :reps :level)
+               use-fst :fst
+               use-snd :snd
                :default :none)]
     (when (not= mode :none)
       (plotter/generate
@@ -222,10 +222,10 @@
   (fn [params]
     (get-in params [:config :etype])))
 
-(defmethod plot :weightlift [{:keys [config eid fst snd] :as params}]
+(defmethod plot :weightlift [params]
   (plot-aux :weightlift params))
 
-(defmethod plot :cardio [{:keys [config eid fst snd] :as params}]
+(defmethod plot :cardio [params]
   (plot-aux :cardio params))
 
 (def not-found (html5 "not found"))
