@@ -27,6 +27,7 @@
                  [com.taoensso/timbre "4.10.0"]
                  [io.aviso/pretty "0.1.34"]
                  [me.raynes/fs "1.4.6"]
+                 [slingshot "0.12.2"]
 
                  ,,,]
 

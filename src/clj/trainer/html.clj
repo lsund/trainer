@@ -3,6 +3,26 @@
   (:require
    [hiccup.form :refer [form-to]]))
 
+(defn navbar []
+  [:div.mui-appbar
+   [:table {:width "100%"}
+    [:tr {:style "vertical-align:middle;"}
+     [:td.mui--appbar-height
+      (form-to [:get "/"]
+               [:input {:type :submit :value "Index"}])]
+     [:td.mui--appbar-height
+      (form-to [:get "/plot/cardio"]
+               [:input {:type :submit :value "Plot Cardio"}])]
+     [:td.mui--appbar-height
+      (form-to [:get "/plot/weightlift"]
+               [:input {:type :submit :value "Plot Weightlift"}])]
+     [:td.mui--appbar-height
+      (form-to [:get "/squash"]
+               [:input {:type :submit :value "Squash Results"}])]
+     [:td.mui--appbar-height
+      (form-to [:get "/history"]
+               [:input {:type :submit :value "Training History"}])]]]])
+
 (defn tablehead [defaults & extra-cols]
   [:thead
    (into [] (concat defaults (map #(conj [:th] %) extra-cols)))])

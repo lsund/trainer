@@ -83,8 +83,6 @@
                       :eid (util/parse-int eid)
                       :fst fst
                       :snd snd}))
-   (GET "/plot-cardio" [eid fst snd]
-        (render/plot-cardio config (util/parse-int eid) fst snd))
    (POST "/add-weightlift" [name sets reps weight]
          (db/add db :weightlift {:name name
                                  :sets (util/parse-int sets)
