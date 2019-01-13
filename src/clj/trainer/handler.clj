@@ -4,7 +4,7 @@
    [compojure.route :as r]
    [compojure.core :refer [routes GET POST ANY]]
    [clojure.string :as string]
-
+   [clj-http.client :as client]
    [ring.util.response :refer [redirect response]]
    [ring.middleware
     [session]
@@ -69,6 +69,11 @@
                        (select-keys e [:duration :distance :highpulse :lowpulse :level])))))
     (db/increment-plan-completed-count db planid)))
 
+(defn- increment-goal-task []
+  (client/post "http://localhost:3007/nudge/at/task"
+               {:client-params {"id" 20
+                                "url" "/"}}))
+
 (defn- app-routes
   [{:keys [db] :as config}]
   (routes
@@ -124,6 +129,7 @@
                       (:name params)
                       (map util/parse-int (:weightlift-list session))
                       (map util/parse-int (:cardio-list session)))
+         (increment-goal-task)
          (-> (redirect "/")
              (assoc :session nil)))
    (POST "/save-plan-instance" {:keys [params]}
@@ -139,7 +145,12 @@
                   :opponentid (util/parse-int opponentid)
                   :myscore (util/parse-int myscore)
                   :opponentscore (util/parse-int opponentscore)})
-         (redirect "/"))
+         (redirect "/squash"))
+   (POST "/add-squash-opponent" [name]
+         (db/add db
+                 :squashopponent
+                 {:name name})
+         (redirect "/squash"))
    (r/resources "/")
    (r/not-found render/not-found)))
 

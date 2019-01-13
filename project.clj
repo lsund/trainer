@@ -5,31 +5,23 @@
 
   :min-lein-version "2.7.0"
 
-  :dependencies [;; Commons
-                 [org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.946"]
                  [org.clojure/core.async  "0.4.474"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [org.clojure/data.csv "0.1.4"]
-
-                 ;; Database
                  [org.clojure/java.jdbc "0.7.6"]
                  [org.postgresql/postgresql "42.2.2"]
-
-                 ;; Web
                  [http-kit "2.2.0"]
+                 [clj-http "3.9.1"]
                  [ring/ring-defaults "0.3.0"]
                  [compojure "1.6.1"]
                  [reagent "0.8.0"]
                  [hiccup "1.0.5"]
-
-                 ;; Other
                  [com.taoensso/timbre "4.10.0"]
                  [io.aviso/pretty "0.1.34"]
                  [me.raynes/fs "1.4.6"]
-                 [slingshot "0.12.2"]
-
-                 ,,,]
+                 [slingshot "0.12.2"]]
 
   :plugins [[lein-figwheel "0.5.15"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]

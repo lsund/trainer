@@ -143,6 +143,10 @@
   (layout config
           "Squash"
           [:div
+           [:h3 "Add Squash Opponent"]
+           (form-to [:post "/add-squash-opponent"]
+                    [:input {:name "name" :type :text}]
+                    [:input.hidden {:type :submit}])
            [:h3 "Add Squash Result"]
            (form-to [:post "/add-squash-result"]
                     [:input {:name "day" :type :date}]
