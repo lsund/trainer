@@ -1,24 +1,16 @@
 (ns trainer.handler
   "Namespace for handling routes"
-  (:require
-   [compojure.route :as r]
-   [compojure.core :refer [routes GET POST ANY]]
-   [clojure.string :as string]
-   [clj-http.client :as client]
-   [ring.util.response :refer [redirect response]]
-   [ring.middleware
-    [session]
-    [defaults :refer [site-defaults wrap-defaults]]
-    [keyword-params :refer [wrap-keyword-params]]
-    [params :refer [wrap-params]]]
-
-   ;; Logging
-   [taoensso.timbre :as logging]
-   [taoensso.timbre.appenders.core :as appenders]
-
-   [trainer.db :as db]
-   [trainer.util :as util]
-   [trainer.render :as render]))
+  (:require [clj-http.client :as client]
+            [clojure.string :as string]
+            [compojure.core :refer [GET POST routes]]
+            [compojure.route :as route]
+            [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.util.response :refer [redirect]]
+            [trainer.db :as db]
+            [trainer.render :as render]
+            [trainer.util :as util]))
 
 (defn process-exercise-property [[k v]]
   (let [[_ id prop & _] (string/split k #"_")]
@@ -151,8 +143,8 @@
                  :squashopponent
                  {:name name})
          (redirect "/squash"))
-   (r/resources "/")
-   (r/not-found render/not-found)))
+   (route/resources "/")
+   (route/not-found render/not-found)))
 
 (defn new-handler
   [config]

@@ -14,6 +14,7 @@
 [x] Fix the todos in render
 [x] add-exercise and update-exercise is now specific to weightlift. It needs to
     adapted. Probably use the exercise type here.
+[x] Add squash opponent through user interface
 [ ] Shold not be able to add the same exercise to plan
 [ ] Send email to ask for current plan
 [ ] Send email for update
