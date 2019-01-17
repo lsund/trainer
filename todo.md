@@ -17,6 +17,7 @@
 [x] Add squash opponent through user interface
 [ ] Why do I have cardio and donecardio with the same arguments? I could just
     reference one. Same with weightlift and doneweightlift
+[ ] Generate training graphs from squash-results or maybe statistics statistics
 [ ] Shold not be able to add the same exercise to plan
 [ ] Send email to ask for current plan
 [ ] Send email for update

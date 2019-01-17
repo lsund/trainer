@@ -45,10 +45,6 @@ plot 'data/%s.csv' using 1:2 t \"%s\" lw 5"
   (with-open [writer (io/writer (str "data/" uuid ".csv"))]
     (csv/write-csv writer res)))
 
-(defn- score [[k1 fst] [k2 snd]]
-  (when (and (= k1 k2) fst snd)
-    [k1 (+ fst snd)]))
-
 (defn- data->range [data]
   (when (empty? data)
     (throw+ {:type ::empty-data :data data}))
@@ -65,23 +61,34 @@ plot 'data/%s.csv' using 1:2 t \"%s\" lw 5"
     (and (= mode second) (= etype :weightlift)) "Number"
     (and (= mode second) (= etype :cardio)) "Level"))
 
+(defn select-data [fst snd rows]
+  [(map #(vals (select-keys % [:day fst])) rows)
+   (map #(vals (select-keys % [:day snd])) rows)])
+
+(defn score [mode fst-type snd-type [time1 fst-data] [time2 snd-data]]
+  (let [fst-val fst-data
+        snd-val (if (= :duration snd-type)
+                  (util/duration-str->int snd-data)
+                  snd-data)]
+    (case mode
+      :both (when (and fst-val snd-val)
+              [time1 (+ fst-val (* snd-val 2))])
+      :fst (when fst-val [time1 fst-val])
+      :snd (when snd-val [time2 snd-val]))))
+
 (defn- generate-aux [etype {:keys [db eid mode]}]
   (util/clear-dir "resources/public/img")
   (util/clear-dir "data")
   (fs/mkdir "data")
-  (let [[fst snd] (case etype
-                    :weightlift [:weight :reps]
-                    :cardio [:duration :level]
-                    nil)
+  (let [[fst-type snd-type] (case etype
+                              :weightlift [:weight :reps]
+                              :cardio [:duration :level]
+                              nil)
         rows (sort-by :day (db/all-where db
                                          (keyword (str "done" (name etype)))
                                          (str "exerciseid=" eid)))
-        fst-data (map #(vals (select-keys % [:day fst])) rows)
-        snd-data (map #(vals (select-keys % [:day snd])) rows)
-        data (case mode
-               :both (filter some? (map score fst-data snd-data))
-               :fst (filter (comp some? second) fst-data)
-               :snd (filter (comp some? second) snd-data))
+        [fst-data snd-data] (select-data fst-type snd-type rows)
+        data (filter some?  (map (partial score mode fst-type snd-type) fst-data snd-data))
         ylabel (mode->ylabel etype mode)
         uuid (util/uuid)]
     (write-csv data uuid)
