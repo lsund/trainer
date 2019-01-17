@@ -15,6 +15,11 @@
 [x] add-exercise and update-exercise is now specific to weightlift. It needs to
     adapted. Probably use the exercise type here.
 [x] Add squash opponent through user interface
+[ ] Use time strings eg 3m45s instead of raw integers in UI.
+    [x] util/duration-str->int
+    [x] util/int->duration-str
+    [ ] Write a migration from ints to duration str in database
+    [x] update plotter to use duration-str->int before generating plots
 [ ] Why do I have cardio and donecardio with the same arguments? I could just
     reference one. Same with weightlift and doneweightlift
 [ ] Generate training graphs from squash-results or maybe statistics statistics

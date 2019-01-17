@@ -43,12 +43,12 @@
     (fs/delete file)))
 
 (defn duration-str->int [x]
-  (let [[_ number-str unit & _] (re-find #"(\d+)([hms]+)" x)
-        number (parse-int number-str)]
-    (case unit
-      "s" number
-      "m" (* number 60)
-      "h" (* number 60 60))))
+  (if-let [[_ minutes _ seconds _] (re-matches #"(\d+)(m)(\d+)(s)" x)]
+    (+ (* (parse-int minutes) 60) (parse-int seconds))
+    (when-let [[_ number unit] (re-matches #"(\d+)([ms])" x)]
+      (case unit
+        "m" (* (parse-int number) 60)
+        "s" (parse-int number)))))
 
 (defn int->duration-str [x]
   (let [q (quot x 60)
