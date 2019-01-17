@@ -19,7 +19,13 @@
     [x] util/duration-str->int
     [x] util/int->duration-str
     [ ] Write a migration from ints to duration str in database
+        [x] Move old duration column name to duration2
+        [x] create new column named duration
+        [x] Do migration
+        [x] Delete duration2
+    [ ] Update cardio table as well
     [x] update plotter to use duration-str->int before generating plots
+[ ] calls to db module should only be done in handler (program entry)
 [ ] Why do I have cardio and donecardio with the same arguments? I could just
     reference one. Same with weightlift and doneweightlift
 [ ] Generate training graphs from squash-results or maybe statistics statistics

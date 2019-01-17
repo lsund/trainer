@@ -56,7 +56,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Update
 
-(defn update [db table update-map id]
+(defn update-row [db table update-map id]
   (j/update! db table update-map ["id=?" id]))
 
 (defn increment-plan-completed-count [db id]

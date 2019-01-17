@@ -65,20 +65,21 @@
            [:input.hidden {:type :submit}]
            [:div
             (for [prop props]
-              [:input {:name prop :type :number :min "0" :placeholder prop}])]
+              (if (= :duration prop)
+                [:input {:name prop :type :text :placeholder prop}]
+                [:input {:name prop :type :number :min "0" :placeholder prop}]))]
            [:button.mui-btn "Add " (name etype)]))
 
-(defn update-form [type e keyseq]
+(defn update-form [type e props]
   (form-to [:post (str "/update-" (name type))]
            [:tr
             [:td (:name e)]
             [:input {:name "id" :type :hidden :value (:exerciseid e)}]
             [:input.hidden {:type :submit}]
-            (for [[k v] (select-keys e keyseq)]
-              [:td [:input {:name k
-                            :type :number
-                            :value v
-                            :min "0"}]])]))
+            (for [[k v] (select-keys e props)]
+              (if (= :duration k)
+                [:td [:input {:name k :type :text :value v}]]
+                [:td [:input {:name k :type :number :value v :min "0"}]]))]))
 
 (defn add-to-plan-form [etype es]
   (form-to [:post (str "/add-" (name etype) "-to-plan")]

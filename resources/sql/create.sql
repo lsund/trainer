@@ -8,7 +8,7 @@ CREATE TABLE Cardio
 (
     id              SERIAL PRIMARY KEY,
     name            varchar(64) NOT NULL UNIQUE,
-    duration        INT,
+    duration        varchar(64),
     distance        INT,
     lowpulse        INT,
     highpulse       INT,
@@ -61,7 +61,7 @@ CREATE TABLE DoneCardio
     day             DATE NOT NULL,
     exerciseid      INT NOT NULL,
     planid          INT NOT NULL,
-    duration        INT,
+    duration        varchar(64),
     distance        INT,
     highpulse       INT,
     lowpulse        INT,
