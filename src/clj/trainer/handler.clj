@@ -121,11 +121,11 @@
                       (:name params)
                       (map util/parse-int (:weightlift-list session))
                       (map util/parse-int (:cardio-list session)))
-         (increment-goal-task)
          (-> (redirect "/")
              (assoc :session nil)))
    (POST "/save-plan-instance" {:keys [params]}
          (save-plan-instance db params)
+         (increment-goal-task)
          (-> (redirect "/")
              (assoc :session nil)))
    (GET "/complete-plan" [plan]

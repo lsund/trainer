@@ -41,3 +41,11 @@
 (defn clear-dir [dirname]
   (doseq [file (fs/list-dir dirname)]
     (fs/delete file)))
+
+(defn duration-str->int [x]
+  (let [[_ number-str unit & _] (re-find #"(\d+)([hms]+)" x)
+        number (parse-int number-str)]
+    (case unit
+      "s" number
+      "m" (* number 60)
+      "h" (* number 60 60))))

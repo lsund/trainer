@@ -15,6 +15,8 @@
 [x] add-exercise and update-exercise is now specific to weightlift. It needs to
     adapted. Probably use the exercise type here.
 [x] Add squash opponent through user interface
+[ ] Why do I have cardio and donecardio with the same arguments? I could just
+    reference one. Same with weightlift and doneweightlift
 [ ] Shold not be able to add the same exercise to plan
 [ ] Send email to ask for current plan
 [ ] Send email for update

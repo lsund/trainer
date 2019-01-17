@@ -89,7 +89,8 @@ plot 'data/%s.csv' using 1:2 t \"%s\" lw 5"
           (make-gnuplot-template {:uuid uuid
                                   :title (:name (db/element db etype eid))
                                   :ylabel ylabel
-                                  :x-range (db/range db (keyword (str "done" (name etype))) :day eid)
+                                  :x-range (db/value-span db
+                                                          (keyword (str "done" (name etype))) :day eid)
                                   :y-range (data->range data)
                                   :mode mode}))
     (shell/sh "gnuplot" (str "data/" uuid ".gnuplot"))

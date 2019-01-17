@@ -7,19 +7,18 @@
             [trainer.util :as util]
             [trainer.config :as config]))
 
-
 (defn pg-db [config]
   {:dbtype "postgresql"
    :dbname (:name config)
    :user "postgres"})
 
+(def pg-db-val (pg-db {:name "trainer"}))
+
 (defrecord Db [db db-config]
   c/Lifecycle
-
   (start [component]
     (println ";; [Db] Starting database")
     (assoc component :db (pg-db db-config)))
-
   (stop [component]
     (println ";; [Db] Stopping database")
     component))
@@ -82,12 +81,12 @@
   (if (not-empty ids)
     (j/query db [(str "SELECT * FROM " (name table) " WHERE id IN " (vec->sql-list ids))])))
 
-(defn range [db table column eid]
+(defn value-span [db table column eid]
   (first (j/query db
-                  [(str "select min(" (name column) "), max(" (name column) ") from " (name table) " where exerciseid=?") eid])))
-
-
-
+                  [(str "SELECT min(" (name column) "),
+                                max(" (name column) ")
+                         FROM " (name table) "
+                         WHERE exerciseid=?") eid])))
 
 (defn all-done-weightlifts-with-name [db]
   (j/query db ["select

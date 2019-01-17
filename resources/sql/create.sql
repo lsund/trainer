@@ -4,9 +4,6 @@ CREATE TABLE ExerciseType
     name            varchar(64) NOT NULL UNIQUE
 );
 
-/* INSERT INTO exercisetype VALUES (1, 'weightlift'); */
-/* INSERT INTO exercisetype VALUES (2, 'cardio'); */
-
 CREATE TABLE Cardio
 (
     id              SERIAL PRIMARY KEY,
