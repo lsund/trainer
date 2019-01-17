@@ -49,3 +49,10 @@
       "s" number
       "m" (* number 60)
       "h" (* number 60 60))))
+
+(defn int->duration-str [x]
+  (let [q (quot x 60)
+        r (rem x 60)]
+    (if (zero? r)
+      (str q "m")
+      (str q "m" r "s"))))
