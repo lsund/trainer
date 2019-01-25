@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [compojure.core :refer [GET POST routes]]
             [compojure.route :as route]
+            [taoensso.timbre :as logging]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.params :refer [wrap-params]]
@@ -62,9 +63,12 @@
     (db/increment-plan-completed-count db planid)))
 
 (defn- increment-goal-task []
-  (client/post "http://localhost:3007/nudge/at/task"
-               {:form-params {"id" 20
-                              "url" "/"}}))
+  (try
+    (client/post "http://localhost:3007/nudge/at/task"
+                 {:form-params {"id" 20
+                                "url" "/"}})
+    (catch Exception e
+      (logging/info (str "Could not make request to goal-tracker " (.getMessage e))))))
 
 (defn- app-routes
   [{:keys [db] :as config}]

@@ -27,11 +27,9 @@
     [x] update plotter to use duration-str->int before generating plots
 [x] Why do I have cardio and donecardio with the same arguments? I could just
     reference one. Same with weightlift and doneweightlift
-
 [x] Bug in update duration.
 [x] When adding plan, cardios do not get added
-[ ] http call to handler does not work
-
+[x] http call to handler does not work
 
 [ ] calls to db module should only be done in handler (program entry)
 [ ] Generate training graphs from squash-results or maybe statistics statistics
