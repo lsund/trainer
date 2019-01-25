@@ -70,18 +70,22 @@
     (catch Exception e
       (logging/info (str "Could not make request to goal-tracker " (.getMessage e))))))
 
+(defn exercises-for-plans [db ids]
+  {:weightlifts-for-plans (group-by :planid (db/weightlifts-for-plans db ids))
+   :cardios-for-plans (group-by :planid (db/cardios-for-plans db ids))})
+
 (defn index [db config weightlift-list cardio-list]
-  (let [params {:weightlifts (db/all db :weightlift)
-                :cardios (db/all db :cardio)
-                :current-plan-weightlifts (db/subset db
-                                                     :weightlift
-                                                     (mapv util/parse-int weightlift-list))
-                :current-plan-cardios (db/subset db
-                                                 :cardio
-                                                 (mapv util/parse-int cardio-list))
-                :plans (db/active-plans db)
-                :weightlifts-for-plans (group-by :planid (db/weightlifts-for-plans))
-                :cardios-for-plans (group-by :planid (db/cardios-for-plans))}]
+  (let [plans (db/active-plans db)
+        params (merge {:weightlifts (db/all db :weightlift)
+                       :cardios (db/all db :cardio)
+                       :current-plan-weightlifts (db/subset db
+                                                            :weightlift
+                                                            (mapv util/parse-int weightlift-list))
+                       :current-plan-cardios (db/subset db
+                                                        :cardio
+                                                        (mapv util/parse-int cardio-list))
+                       :plans plans}
+                      (exercises-for-plans db (map :id plans)))]
     (render/index config params)))
 
 (defn- app-routes
@@ -148,7 +152,7 @@
          (-> (redirect "/")
              (assoc :session nil)))
    (GET "/complete-plan" [plan]
-        (render/complete-plan config (util/parse-int plan)))
+        (render/complete-plan (assoc (exercises-for-plans db [plan]) :id (util/parse-int plan))))
    (POST "/add-squash-result" [day opponentid myscore opponentscore]
          (db/add db
                  :squashresult

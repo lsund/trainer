@@ -30,11 +30,6 @@
   [config]
   (map->Db {:db-config config}))
 
-(defn exercise-type->id [etype]
-  (if (= etype :weightlift)
-    "1"
-    "2"))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Insert
 

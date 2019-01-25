@@ -21,26 +21,32 @@
     (apply include-css (:styles config))
     (apply include-js (:javascripts config))]))
 
-(defn- active-plans [{:keys [db] :as config}]
+(defn- active-plans [params]
   [:ul
-   (for [p (db/active-plans db)]
+   (for [p (:plans params)]
      [:li
       [:h3 (str (:name p) " completed " (:timescompleted p) " times")]
       [:table
        (html/cardio-tablehead)
        [:tbody
-        (for [e (db/cardios-for-plan db (:id p))]
+        (for [e (get (:cardios-for-plans params) (:id p))]
           (html/update-form :cardio
                             e
                             [:duration :distance :highpulse :lowpulse :level]))]]
       [:table
        (html/weightlift-tablehead)
        [:tbody
-        (for [e (db/weightlifts-for-plan db (:id p))]
+        (for [e (get (:weightlifts-for-plans params) (:id p))]
           (html/update-form :weightlift e [:sets :reps :weight]))]]])])
 
+(defn- exercise-type->id [etype]
+  (case etype
+    :weightlift "1"
+    :cardio "2"
+    (throw (Exception. (str "Unknown etype: " etype)))))
+
 (defn- save-instance-field [[k v] exerciseid etype]
-  (let [form-name (str (db/exercise-type->id etype)
+  (let [form-name (str (exercise-type->id etype)
                        "_" exerciseid
                        "_" (name k))]
     (cond
@@ -55,10 +61,10 @@
       :default v)))
 
 (defn- skip-optionally [e etype]
-  [:td [:input {:name (str (db/exercise-type->id etype) "_" (:exerciseid e) "_skip")
+  [:td [:input {:name (str (exercise-type->id etype) "_" (:exerciseid e) "_skip")
                 :type :checkbox}]])
 
-(defn complete-plan [{:keys [db]} id]
+(defn complete-plan [{:keys [id] :as params}]
   (html5
    [:head
     [:title "Trainer - Complete plan"]]
@@ -70,12 +76,12 @@
               (html/cardio-tablehead "Skip?")
               (html/cardio-tablebody save-instance-field
                                      skip-optionally
-                                     (db/cardios-for-plan db id))]
+                                     (get (:cardios-for-plans params) id))]
              [:table
               (html/weightlift-tablehead "Skip?")
               (html/weightlift-tablebody save-instance-field
                                          skip-optionally
-                                         (db/weightlifts-for-plan db id))]
+                                         (get (:weightlifts-for-plans params) id))]
              [:input {:type :submit :value "Save plan"}])]))
 
 (defn- value-or-na [[_ v] _ _]
@@ -224,4 +230,4 @@
                        [:option {:value (:id e)} (:name e)])]
                     [:button.mui-btn "Start"])
            [:h2 "Active plans"]
-           (active-plans config (:plans params))]))
+           (active-plans params)]))
