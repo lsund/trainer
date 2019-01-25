@@ -94,7 +94,8 @@
    (GET "/" {:keys [session]}
         (index db config (:weightlift-list session) (:cardio-list session)))
    (GET "/history" []
-        (render/history config))
+        (render/history config {:done-cardios (db/all-done-cardios-with-name db)
+                                :done-weightlifts (db/all-done-weightlifts-with-name db)}))
    (GET "/squash" []
         (render/squash config))
    (GET "/plot/:etype" [eid fst snd etype]

@@ -91,15 +91,15 @@
 
 (defn- const-nil [& _] nil)
 
-(defn history [{:keys [db] :as config}]
+(defn history [config params]
   (layout config
           "History"
           [:div
            (let [cardio-map (->> (map #(assoc % :collection :cardios)
-                                      (db/all-done-cardios-with-name db))
+                                      (:done-cardios params))
                                  (group-by :day))
                  weightlift-map (->> (map #(assoc % :collection :weightlifts)
-                                          (db/all-done-weightlifts-with-name db))
+                                          (:done-weightlifts params))
                                      (group-by :day))]
 
              (for [[day e] (-> (merge-with concat weightlift-map cardio-map) sort reverse)]
