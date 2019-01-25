@@ -138,13 +138,14 @@
 
 (defn squash-results [db]
   (j/query db
-           ["select name,
+           ["SELECT name,
                     squashresult.day,
                     squashresult.myscore,
                     squashresult.opponentscore
-             from squashresult
-             inner join squashopponent
-             on squashresult.opponentid = squashopponent.id"]))
+             FROM squashresult
+             INNER JOIN squashopponent
+             ON squashresult.opponentid = squashopponent.id
+             ORDER BY day DESC"]))
 
 (defn active-plans [db]
   (j/query db ["select * from plan where active = 't' order by timescompleted desc"]))

@@ -97,7 +97,8 @@
         (render/history config {:done-cardios (db/all-done-cardios-with-name db)
                                 :done-weightlifts (db/all-done-weightlifts-with-name db)}))
    (GET "/squash" []
-        (render/squash config))
+        (render/squash config {:opponents (db/all db :squashopponent)
+                               :results (db/squash-results db)}))
    (GET "/plot/:etype" [eid fst snd etype]
         (render/plot (keyword etype)
                      config

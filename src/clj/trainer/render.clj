@@ -115,7 +115,7 @@
                      (html/weightlift-tablehead)
                      (html/weightlift-tablebody value-or-na const-nil weightlifts)])])))]))
 
-(defn squash [{:keys [db] :as config}]
+(defn squash [config params]
   (layout config
           "Squash"
           [:div
@@ -127,7 +127,7 @@
            (form-to [:post "/add-squash-result"]
                     [:input {:name "day" :type :date}]
                     [:select {:name "opponentid"}
-                     (for [e (db/all db :squashopponent)]
+                     (for [e (:opponents params)]
                        [:option {:value (:id e)} (:name e)])]
                     [:input {:name "myscore" :type :number}]
                     [:input {:name "opponentscore" :type :number}]
@@ -142,7 +142,7 @@
                             nil
                             const
                             const-nil
-                            (reverse (sort-by :day (db/squash-results db))))]]))
+                            (:results params))]]))
 
 (defn- maybe-regenerate-plot [db eid etype fst snd]
   (let [use-fst (= fst "on")
