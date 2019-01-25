@@ -28,9 +28,7 @@
 [x] Why do I have cardio and donecardio with the same arguments? I could just
     reference one. Same with weightlift and doneweightlift
 
-# URGENT
-
-[ ] Bug in update duration.
+[x] Bug in update duration.
 [ ] When adding plan, cardios do not get added
 [ ] http call to handler does not work
 

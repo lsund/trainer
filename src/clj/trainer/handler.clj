@@ -100,7 +100,7 @@
                                         :weight (util/parse-int weight)} (util/parse-int id))
          (redirect "/"))
    (POST "/update-cardio" [id duration distance highpulse lowpulse level]
-         (db/update-row db :cardio     {:duration (util/parse-int duration)
+         (db/update-row db :cardio     {:duration duration
                                         :distance (util/parse-int distance)
                                         :highpulse (util/parse-int highpulse)
                                         :lowpulse (util/parse-int lowpulse)
