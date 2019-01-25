@@ -105,33 +105,41 @@
                 from donecardio
                 inner join cardio on donecardio.exerciseid = cardio.id;"]))
 
-(defn weightlifts-for-plan [db id]
+(defn weightlifts-for-plans [db ids]
   (j/query db
-           ["select exerciseid,
-                    weightlift.name,
-                    weightlift.sets,
-                    weightlift.reps,
-                    weightlift.weight
-             from plannedexercise
-             inner join weightlift
-             on weightlift.id = exerciseid
-             and planid = ?
-             and exercisetype = 1" id]))
+           [(str "SELECT plan.id AS planid,
+                         exerciseid,
+                         weightlift.name,
+                         weightlift.sets,
+                         weightlift.reps,
+                         weightlift.weight
+                  FROM plannedexercise
+                  INNER JOIN weightlift
+                  ON weightlift.id = exerciseid
+                  AND planid IN "
+                 (vec->sql-list ids)
+                 " AND exercisetype = 1
+                  INNER JOIN plan
+                  ON plan.id = planid")]))
 
-(defn cardios-for-plan [db id]
+(defn cardios-for-plans [db ids]
   (j/query db
-           ["select exerciseid,
-                    cardio.name,
-                    cardio.duration,
-                    cardio.distance,
-                    cardio.highpulse,
-                    cardio.lowpulse,
-                    cardio.level
-             from plannedexercise
-             inner join cardio
-             on cardio.id = exerciseid
-             and planid = ?
-             and exercisetype = 2" id]))
+           [(str "SELECT plan.id AS planid,
+                         exerciseid,
+                         cardio.name,
+                         cardio.duration,
+                         cardio.distance,
+                         cardio.highpulse,
+                         cardio.lowpulse,
+                         cardio.level
+                  FROM plannedexercise
+                  INNER JOIN cardio
+                  ON cardio.id = exerciseid
+                  AND planid IN "
+                 (vec->sql-list ids)
+                 " AND exercisetype = 2
+                  INNER JOIN plan
+                  ON plan.id = planid")]))
 
 (defn squash-results [db]
   (j/query db

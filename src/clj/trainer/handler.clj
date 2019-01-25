@@ -79,7 +79,9 @@
                 :current-plan-cardios (db/subset db
                                                  :cardio
                                                  (mapv util/parse-int cardio-list))
-                :plans (db/active-plans db)}]
+                :plans (db/active-plans db)
+                :weightlifts-for-plans (group-by :planid (db/weightlifts-for-plans))
+                :cardios-for-plans (group-by :planid (db/cardios-for-plans))}]
     (render/index config params)))
 
 (defn- app-routes

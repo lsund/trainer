@@ -224,4 +224,4 @@
                        [:option {:value (:id e)} (:name e)])]
                     [:button.mui-btn "Start"])
            [:h2 "Active plans"]
-           (active-plans config)]))
+           (active-plans config (:plans params))]))
