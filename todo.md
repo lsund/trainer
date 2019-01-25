@@ -23,11 +23,19 @@
         [x] create new column named duration
         [x] Do migration
         [x] Delete duration2
-    [ ] Update cardio table as well
+    [x] Update cardio table as well
     [x] update plotter to use duration-str->int before generating plots
-[ ] calls to db module should only be done in handler (program entry)
-[ ] Why do I have cardio and donecardio with the same arguments? I could just
+[x] Why do I have cardio and donecardio with the same arguments? I could just
     reference one. Same with weightlift and doneweightlift
+
+# URGENT
+
+[ ] Bug in update duration.
+[ ] When adding plan, cardios do not get added
+[ ] http call to handler does not work
+
+
+[ ] calls to db module should only be done in handler (program entry)
 [ ] Generate training graphs from squash-results or maybe statistics statistics
 [ ] Shold not be able to add the same exercise to plan
 [ ] Send email to ask for current plan

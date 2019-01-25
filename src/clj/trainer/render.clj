@@ -98,7 +98,13 @@
              [:input {:type :date :name "day" :required "true"}]
              [:table
               (html/cardio-tablehead "Skip?")
-              (html/cardio-tablebody modifiable-if-number
+              ;; todo
+              [:tbody
+               (for [e (db/cardios-for-plan db id)]
+                 (html/update-form :cardio
+                                   e
+                                   [:duration :distance :highpulse :lowpulse :level]))]
+              #_(html/cardio-tablebody modifiable-if-number
                                      skip-optionally
                                      (db/cardios-for-plan db id))]
              [:table
