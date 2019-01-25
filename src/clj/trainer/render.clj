@@ -23,7 +23,7 @@
 
 (defn- active-plans [{:keys [db] :as config}]
   [:ul
-   (for [p (db/all-where db :plan "active = 't'")]
+   (for [p (db/active-plans db)]
      [:li
       [:h3 (str (:name p) " completed " (:timescompleted p) " times")]
       [:table
@@ -74,15 +74,20 @@
            [:h2 "Active plans"]
            (active-plans config)]))
 
-(defn- modifiable-if-number [[k v] exerciseid etype]
-  (cond (util/parse-int v) [:input {:name (str (db/exercise-type->id etype) "_"
-                                               exerciseid "_"
-                                               (name k))
-                                    :type :number
-                                    :value v
-                                    :min "0"}]
-        (nil? v) "N/A"
-        :default v))
+(defn- save-instance-field [[k v] exerciseid etype]
+  (let [form-name (str (db/exercise-type->id etype)
+                       "_" exerciseid
+                       "_" (name k))]
+    (cond
+      (= :duration k) [:input {:name form-name
+                               :type :text
+                               :value v}]
+      (util/parse-int v) [:input {:name form-name
+                                  :type :number
+                                  :value v
+                                  :min "0"}]
+      (nil? v) "N/A"
+      :default v)))
 
 (defn- skip-optionally [e etype]
   [:td [:input {:name (str (db/exercise-type->id etype) "_" (:exerciseid e) "_skip")
@@ -98,18 +103,12 @@
              [:input {:type :date :name "day" :required "true"}]
              [:table
               (html/cardio-tablehead "Skip?")
-              ;; todo
-              [:tbody
-               (for [e (db/cardios-for-plan db id)]
-                 (html/update-form :cardio
-                                   e
-                                   [:duration :distance :highpulse :lowpulse :level]))]
-              #_(html/cardio-tablebody modifiable-if-number
+              (html/cardio-tablebody save-instance-field
                                      skip-optionally
                                      (db/cardios-for-plan db id))]
              [:table
               (html/weightlift-tablehead "Skip?")
-              (html/weightlift-tablebody modifiable-if-number
+              (html/weightlift-tablebody save-instance-field
                                          skip-optionally
                                          (db/weightlifts-for-plan db id))]
              [:input {:type :submit :value "Save plan"}])]))

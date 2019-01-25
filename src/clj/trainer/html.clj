@@ -50,7 +50,7 @@
    (for [e es]
      [:tr
       (for [[k v] (select-keys e keyseq)]
-        [:td (apply f [[k v] (:exerciseid e) etype] )])
+        [:td (apply f [[k v] (:exerciseid e) etype])])
       (end-f e etype)])])
 
 (def cardio-tablebody
