@@ -1,5 +1,5 @@
 (ns trainer.render
-  "Namespace for rendering hiccup"
+  "Namespace for rendering views"
   (:require
    [trainer.db :as db]
    [taoensso.timbre :as logging]
@@ -38,41 +38,6 @@
        [:tbody
         (for [e (db/weightlifts-for-plan db (:id p))]
           (html/update-form :weightlift e [:sets :reps :weight]))]]])])
-
-(defn index
-  [{:keys [db] :as config} {:keys [weightlift-list cardio-list] :as session }]
-  (layout config
-          "Overview"
-          [:div
-           [:h2 "Add cardio or weightlift exercises"]
-           (html/add-exercise-form :weightlift [:sets :reps :weight])
-           (html/add-exercise-form :cardio [:duration :distance :highpulse :lowpulse :level])
-           [:h2 "Make a new plan"]
-           (html/add-to-plan-form :weightlift (db/all db :weightlift))
-           (html/add-to-plan-form :cardio (db/all db :cardio))
-           [:h2 "Current plan"]
-           [:table
-            [:thead
-             [:tr
-              [:th "Name"]]]
-            [:tbody
-             (for [e (db/subset db :weightlift (mapv util/parse-int weightlift-list))]
-               [:tr
-                [:td (:name e)]])
-             (for [e (db/subset db :cardio (mapv util/parse-int cardio-list))]
-               [:tr
-                [:td (:name e)]])]]
-           (form-to [:post "/save-plan"]
-                    [:input {:name "name" :type :text :placeholder "Plan name"}]
-                    [:button.mui-btn "Save plan"])
-           [:h3 "Complete a plan"]
-           (form-to [:get "/complete-plan"]
-                    [:select {:name "plan"}
-                     (for [e (db/all-where db :plan "active='t'")]
-                       [:option {:value (:id e)} (:name e)])]
-                    [:button.mui-btn "Start"])
-           [:h2 "Active plans"]
-           (active-plans config)]))
 
 (defn- save-instance-field [[k v] exerciseid etype]
   (let [form-name (str (db/exercise-type->id etype)
@@ -188,7 +153,7 @@
         :type etype
         :mode mode}))))
 
-(defn- plot-aux [etype {:keys [config eid fst snd]}]
+(defn plot [etype config {:keys [eid fst snd]}]
   (let [plot-result (try+
                      {:uuid (maybe-regenerate-plot (:db config) eid etype fst snd)}
                      (catch [:type :trainer.plotter/empty-data] {:keys [data]}
@@ -224,14 +189,39 @@
                  [:img {:src (str "/img/" uuid ".png")}]
                  [:p "Use the button above to generate a graph"])]))))
 
-(defmulti plot
-  (fn [params]
-    (get-in params [:config :etype])))
-
-(defmethod plot :weightlift [params]
-  (plot-aux :weightlift params))
-
-(defmethod plot :cardio [params]
-  (plot-aux :cardio params))
-
 (def not-found (html5 "not found"))
+
+(defn index
+  [config params]
+  (layout config
+          "Overview"
+          [:div
+           [:h2 "Add cardio or weightlift exercises"]
+           (html/add-exercise-form :weightlift [:sets :reps :weight])
+           (html/add-exercise-form :cardio [:duration :distance :highpulse :lowpulse :level])
+           [:h2 "Make a new plan"]
+           (html/add-to-plan-form :weightlift (:weightlifts params))
+           (html/add-to-plan-form :cardio (:cardios params))
+           [:h2 "Current plan"]
+           [:table
+            [:thead
+             [:tr
+              [:th "Name"]]]
+            [:tbody
+             (for [e (:current-plan-weightlifts params)]
+               [:tr
+                [:td (:name e)]])
+             (for [e (:current-plan-cardios params)]
+               [:tr
+                [:td (:name e)]])]]
+           (form-to [:post "/save-plan"]
+                    [:input {:name "name" :type :text :placeholder "Plan name"}]
+                    [:button.mui-btn "Save plan"])
+           [:h3 "Complete a plan"]
+           (form-to [:get "/complete-plan"]
+                    [:select {:name "plan"}
+                     (for [e (:plans params)]
+                       [:option {:value (:id e)} (:name e)])]
+                    [:button.mui-btn "Start"])
+           [:h2 "Active plans"]
+           (active-plans config)]))

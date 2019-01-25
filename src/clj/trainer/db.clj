@@ -144,7 +144,7 @@
              on squashresult.opponentid = squashopponent.id"]))
 
 (defn active-plans [db]
-  (j/query db ["select * from plan where active = 't' order by timescompleted"]))
+  (j/query db ["select * from plan where active = 't' order by timescompleted desc"]))
 
 (defn cardio-ids-for-plan [db id]
   (map :exerciseid

@@ -70,18 +70,31 @@
     (catch Exception e
       (logging/info (str "Could not make request to goal-tracker " (.getMessage e))))))
 
+(defn index [db config weightlift-list cardio-list]
+  (let [params {:weightlifts (db/all db :weightlift)
+                :cardios (db/all db :cardio)
+                :current-plan-weightlifts (db/subset db
+                                                     :weightlift
+                                                     (mapv util/parse-int weightlift-list))
+                :current-plan-cardios (db/subset db
+                                                 :cardio
+                                                 (mapv util/parse-int cardio-list))
+                :plans (db/active-plans db)}]
+    (render/index config params)))
+
 (defn- app-routes
   [{:keys [db] :as config}]
   (routes
    (GET "/" {:keys [session]}
-        (render/index config session))
+        (index db config (:weightlift-list session) (:cardio-list session)))
    (GET "/history" []
         (render/history config))
    (GET "/squash" []
         (render/squash config))
    (GET "/plot/:etype" [eid fst snd etype]
-        (render/plot {:config (assoc config :etype (keyword etype))
-                      :eid (util/parse-int eid)
+        (render/plot (keyword etype)
+                     config
+                     {:eid (util/parse-int eid)
                       :fst fst
                       :snd snd}))
    (POST "/add-weightlift" [name sets reps weight]
