@@ -63,8 +63,8 @@
 
 (defn- increment-goal-task []
   (client/post "http://localhost:3007/nudge/at/task"
-               {:client-params {"id" 20
-                                "url" "/"}}))
+               {:form-params {"id" 20
+                              "url" "/"}}))
 
 (defn- app-routes
   [{:keys [db] :as config}]

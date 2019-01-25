@@ -29,7 +29,7 @@
     reference one. Same with weightlift and doneweightlift
 
 [x] Bug in update duration.
-[ ] When adding plan, cardios do not get added
+[x] When adding plan, cardios do not get added
 [ ] http call to handler does not work
 
 
