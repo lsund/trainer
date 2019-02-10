@@ -93,7 +93,8 @@
 (defn- app-routes
   [{:keys [db] :as config}]
   (routes
-   (GET "/" {:keys [session]}
+   (GET "/" [] "Hello from heroku")
+   #_(GET "/" {:keys [session]}
         (index db config (:weightlift-list session) (:cardio-list session)))
    (GET "/history" []
         (render/history config {:done-cardios (db/all-done-cardios-with-name db)
