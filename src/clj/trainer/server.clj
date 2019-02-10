@@ -1,6 +1,7 @@
 (ns trainer.server
   "Namespace for defining the server component"
   (:require [com.stuartsierra.component :as c]
+            [environ.core :refer [env]]
             [org.httpkit.server :refer [run-server]]))
 
 (defrecord Server [app port server]
@@ -26,4 +27,4 @@
 
 (defn new-server
   [config]
-  (map->Server {:port (:port config)}))
+  (map->Server {:port (Integer. (or (env :port) (:port config)))}))
