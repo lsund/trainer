@@ -2,12 +2,10 @@
   "Namespace for running the program once"
   (:require
    [trainer.config :as config]
-   [org.httpkit.server :refer [run-server]]
-   [compojure.handler :refer [site]]
-   [trainer.handler :refer [new-handler]])
+   [trainer.core :refer [new-system]]
+   [com.stuartsierra.component :as c])
   (:gen-class))
 
 (defn -main [& args]
-  (let [config (config/load)]
-    (run-server (handler/new-handler (:app config)) {:port (get-in config [:server :port])})
-    (println "Server up and running")))
+  (c/start (new-system (config/load)))
+  (println "Server up and running"))
