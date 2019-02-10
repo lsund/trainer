@@ -6,11 +6,12 @@
    [trainer.server :as server]
    [trainer.db :as db]))
 
+;; TODO change back for DB dependency
 (defn new-system
   [config]
   (c/system-map :server (c/using (server/new-server (:server config))
                                  [:app])
                 :app (c/using (app/new-app (:app config))
-                              [])
+                              [#_:db])
                 #_:db #_(c/using (db/new-db (:db config))
                              [])))

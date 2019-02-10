@@ -94,6 +94,7 @@
   [{:keys [db] :as config}]
   (routes
    (GET "/" [] "Hello from heroku")
+   ;; TODO change back for DB dependency
    #_(GET "/" {:keys [session]}
         (index db config (:weightlift-list session) (:cardio-list session)))
    (GET "/history" []
