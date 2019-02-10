@@ -7,5 +7,8 @@
   (:gen-class))
 
 (defn -main [& args]
-  (c/start (new-system (config/load)))
   (println "Server up and running"))
+
+;; (defn -main [& args]
+;;   (c/start (new-system (config/load)))
+;;   (println "Server up and running"))
