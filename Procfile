@@ -1,1 +1,1 @@
-web: java -jar target/trainer.jar
+web: java $JVM_OPTS -cp target/trainer.jar clojure.main -m trainer.web
