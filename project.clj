@@ -24,6 +24,7 @@
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]
             [io.aviso/pretty "0.1.34"]]
   :source-paths ["src/clj" "src/cljs"]
+  :uberjar-name "trainer-standalone.jar"
   :ring {:handler trainer.core/new-handler}
   :main trainer.main
   :cljsbuild {:builds
@@ -47,7 +48,8 @@
   {:css-dirs ["resources/public/css"]}
   :repl-options
   {:init-ns user}
-  :profiles {:dev {:dependencies  [[binaryage/devtools "0.9.9"]
+  :profiles {:production {:env {:production true}}
+             :dev {:dependencies  [[binaryage/devtools "0.9.9"]
                                    [figwheel-sidecar "0.5.15"]
                                    [com.cemerick/piggieback "0.2.2"]]
                    :source-paths  ["src/clj" "src/cljs" "dev"]
