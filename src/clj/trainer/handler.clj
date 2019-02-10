@@ -19,7 +19,9 @@
      :key (keyword prop)
      :value (if (= v "on")
               :true
-              (util/parse-int v))}))
+              (if-not (= (keyword prop) :duration)
+                (util/parse-int v)
+                v))}))
 
 (defn make-exercise [id props]
   (assoc (into {} (for [prop props]
@@ -52,14 +54,14 @@
                         :planid planid
                         :exerciseid (:id e)}
                        (select-keys e [:sets :reps :weight])))))
-    (doseq [e cardios]
-      (when-not (:skip e)
+    (doseq [cardio cardios]
+      (when-not (:skip cardio)
         (db/add db
                 :donecardio
                 (merge {:day day
                         :planid planid
-                        :exerciseid (:id e)}
-                       (select-keys e [:duration :distance :highpulse :lowpulse :level])))))
+                        :exerciseid (:id cardio)}
+                       (select-keys cardio [:duration :distance :highpulse :lowpulse :level])))))
     (db/increment-plan-completed-count db planid)))
 
 (defn- increment-goal-task []

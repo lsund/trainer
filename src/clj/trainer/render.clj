@@ -46,14 +46,14 @@
     (throw (Exception. (str "Unknown etype: " etype)))))
 
 (defn- save-instance-field [[k v] exerciseid etype]
-  (let [form-name (str (exercise-type->id etype)
-                       "_" exerciseid
-                       "_" (name k))]
+  (let [tag (str (exercise-type->id etype)
+                 "_" exerciseid
+                 "_" (name k))]
     (cond
-      (= :duration k) [:input {:name form-name
+      (= :duration k) [:input {:name tag
                                :type :text
                                :value v}]
-      (util/parse-int v) [:input {:name form-name
+      (util/parse-int v) [:input {:name tag
                                   :type :number
                                   :value v
                                   :min "0"}]

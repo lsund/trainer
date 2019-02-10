@@ -148,7 +148,7 @@
              ORDER BY day DESC"]))
 
 (defn active-plans [db]
-  (j/query db ["select * from plan where active = 't' order by timescompleted desc"]))
+  (j/query db ["select * from plan where active = 't' order by timescompleted asc"]))
 
 (defn cardio-ids-for-plan [db id]
   (map :exerciseid
