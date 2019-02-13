@@ -5,6 +5,7 @@
             [clojure.string :as string]
             [com.stuartsierra.component :as c]
             [taoensso.timbre :as timbre]
+            [environ.core :refer [env]]
             [trainer.util :as util]
             [trainer.config :as config]
             [jdbc.pool.c3p0 :as pool]))
@@ -14,8 +15,10 @@
 
 (def db-uri
   (java.net.URI. (or
-    (System/getenv "DATABASE_URL")
-    "postgresql://localhost:5432/trainer")))
+                  (env :heroku-postgresql-olive-url)
+                  "postgresql://localhost:5432/trainer")))
+
+(println "Using " (str db-uri))
 
 (def user-and-password
   (if (nil? (.getUserInfo db-uri))
@@ -24,13 +27,13 @@
 
 (defn make-db-spec []
   (pool/make-datasource-spec
-    {:classname "org.postgresql.Driver"
+   {:classname "org.postgresql.Driver"
     :subprotocol "postgresql"
     :user (get user-and-password 0)
     :password (get user-and-password 1)
     :subname (if (= -1 (.getPort db-uri))
-                (format "//%s%s" (.getHost db-uri) (.getPath db-uri))
-                (format "//%s:%s%s" (.getHost db-uri) (.getPort db-uri) (.getPath db-uri)))}))
+               (format "//%s%s" (.getHost db-uri) (.getPath db-uri))
+               (format "//%s:%s%s" (.getHost db-uri) (.getPort db-uri) (.getPath db-uri)))}))
 
 (defn pg-db [config]
   {:dbtype "postgresql"
@@ -107,7 +110,7 @@
 
 (defn value-span [db table column eid]
   (first (jdbc/query db
-                  [(str "SELECT min(" (name column) "),
+                     [(str "SELECT min(" (name column) "),
                                 max(" (name column) ")
                          FROM " (name table) "
                          WHERE exerciseid=?") eid])))
@@ -131,7 +134,7 @@
 
 (defn weightlifts-for-plans [db ids]
   (jdbc/query db
-           [(str "SELECT plan.id AS planid,
+              [(str "SELECT plan.id AS planid,
                          exerciseid,
                          weightlift.name,
                          weightlift.sets,
@@ -141,14 +144,14 @@
                   INNER JOIN weightlift
                   ON weightlift.id = exerciseid
                   AND planid IN "
-                 (vec->sql-list ids)
-                 " AND exercisetype = 1
+                    (vec->sql-list ids)
+                    " AND exercisetype = 1
                   INNER JOIN plan
                   ON plan.id = planid")]))
 
 (defn cardios-for-plans [db ids]
   (jdbc/query db
-           [(str "SELECT plan.id AS planid,
+              [(str "SELECT plan.id AS planid,
                          exerciseid,
                          cardio.name,
                          cardio.duration,
@@ -160,14 +163,14 @@
                   INNER JOIN cardio
                   ON cardio.id = exerciseid
                   AND planid IN "
-                 (vec->sql-list ids)
-                 " AND exercisetype = 2
+                    (vec->sql-list ids)
+                    " AND exercisetype = 2
                   INNER JOIN plan
                   ON plan.id = planid")]))
 
 (defn squash-results [db]
   (jdbc/query db
-           ["SELECT name,
+              ["SELECT name,
                     squashresult.day,
                     squashresult.myscore,
                     squashresult.opponentscore
@@ -182,7 +185,7 @@
 (defn cardio-ids-for-plan [db id]
   (map :exerciseid
        (jdbc/query db
-                ["SELECT exerciseid FROM plannedexercise WHERE planid=? and exercisetype=2" id])))
+                   ["SELECT exerciseid FROM plannedexercise WHERE planid=? and exercisetype=2" id])))
 
 (defn timeline [db column exerciseid]
   (let [table (if (some #{column} [:sets :reps :weight]) "doneweightlift" "donecardio")]
