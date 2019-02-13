@@ -18,8 +18,6 @@
                   (env :heroku-postgresql-olive-url)
                   "postgresql://localhost:5432/trainer")))
 
-(println "Using " (str db-uri))
-
 (def user-and-password
   (if (nil? (.getUserInfo db-uri))
     nil
