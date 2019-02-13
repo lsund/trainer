@@ -17,3 +17,4 @@ resources/public/js
 *.log
 data
 img
+resources/sql/dumps

@@ -93,9 +93,7 @@
 (defn- app-routes
   [{:keys [db] :as config}]
   (routes
-   (GET "/" [] "Hello from heroku")
-   ;; TODO change back for DB dependency
-   #_(GET "/" {:keys [session]}
+   (GET "/" {:keys [session]}
         (index db config (:weightlift-list session) (:cardio-list session)))
    (GET "/history" []
         (render/history config {:done-cardios (db/all-done-cardios-with-name db)

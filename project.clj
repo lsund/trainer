@@ -8,6 +8,7 @@
                  [org.clojure/tools.namespace "0.2.11"]
                  [org.clojure/data.csv "0.1.4"]
                  [org.clojure/java.jdbc "0.7.6"]
+                 [clojure.jdbc/clojure.jdbc-c3p0 "0.3.3"]
                  [org.postgresql/postgresql "42.2.2"]
                  [http-kit "2.2.0"]
                  [clj-http "3.9.1"]
