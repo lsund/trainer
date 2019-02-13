@@ -9,6 +9,9 @@
             [trainer.config :as config]
             [jdbc.pool.c3p0 :as pool]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Make DB Spec
+
 (def db-uri
   (java.net.URI. (or
     (System/getenv "DATABASE_URL")
@@ -19,7 +22,7 @@
     nil
     (clojure.string/split (.getUserInfo db-uri) #":")))
 
-(def spec
+(defn make-db-spec []
   (pool/make-datasource-spec
     {:classname "org.postgresql.Driver"
     :subprotocol "postgresql"
@@ -40,17 +43,17 @@
 
 (def pg-db-val (pg-db {:name "trainer"}))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; API
+
 (defrecord Db [db db-config]
   c/Lifecycle
   (start [component]
     (println ";; [Db] Starting database")
-    (assoc component :db (pg-db db-config)))
+    (assoc component :db (make-db-spec)))
   (stop [component]
     (println ";; [Db] Stopping database")
     component))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Util
 
 (defn new-db
   [config]
