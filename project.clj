@@ -1,4 +1,4 @@
-(defproject trainer "0.1.0-SNAPSHOT"
+(defproject trainer "1.0.0"
   :description "Personal fitness application"
   :url "https://github.com/lsund/trainer"
   :min-lein-version "2.7.0"
