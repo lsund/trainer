@@ -36,3 +36,9 @@
 [ ] Shold not be able to add the same exercise to plan
 [ ] Send email to ask for current plan
 [ ] Send email for update
+
+# Deployment
+
+[x] Kill digitalocean apps
+[x] reimport database
+[x] Upgrade heroku plan
