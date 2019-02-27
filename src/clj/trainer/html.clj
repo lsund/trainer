@@ -23,7 +23,7 @@
       (form-to [:get "/history"]
                [:input {:type :submit :value "Training History"}])]]]])
 
-(defn tablehead [defaults & extra-cols]
+(defn tablehead [defaults extra-cols]
   [:thead
    (into [] (concat defaults (map #(conj [:th] %) extra-cols)))])
 
@@ -45,13 +45,14 @@
               [:th "Level"]]
              extra-cols))
 
-(defn tablebody [keyseq etype f end-f es]
+(defn tablebody [keyseq etype f end-fs es]
   [:tbody
    (for [e es]
      [:tr
       (for [[k v] (select-keys e keyseq)]
         [:td (apply f [[k v] (:exerciseid e) etype])])
-      (end-f e etype)])])
+      (for [f end-fs]
+        (f e etype))])])
 
 (def cardio-tablebody
   (partial tablebody [:name :duration :distance :highpulse :lowpulse :level] :cardio))

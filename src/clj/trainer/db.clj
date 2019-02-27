@@ -81,6 +81,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Update
 
+(defmulti nudge-weight
+  (fn [_ op _] op))
+
+(defmethod nudge-weight :inc [db _ {:keys [id reps weight highreps delta]}]
+  (let [maxreps (if highreps 24 12)
+        minreps (if highreps 20 10)
+        update-map (if (>= reps maxreps)
+                     {:reps minreps
+                      :weight (+ weight delta)}
+                     {:reps (inc reps)})]
+    (update-row db :weightlift update-map id)))
+
+(defmethod nudge-weight :dec [db _ {:keys [id reps weight highreps delta]}]
+  (let [maxreps (if highreps 24 12)
+        minreps (if highreps 20 10)
+        update-map (if (<= reps minreps)
+                     {:reps maxreps
+                      :weight (- weight delta)}
+                     {:reps (dec reps)})]
+    (update-row db :weightlift update-map id)))
+
 (defn update-row [db table update-map id]
   (jdbc/update! db table update-map ["id=?" id]))
 
@@ -90,7 +111,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Query
 
-(defn element [db table id]
+(defn row [db table id]
   (first (jdbc/query db [(str "SELECT * FROM " (name table) " WHERE id=?") id])))
 
 (defn all [db table]

@@ -1,3 +1,11 @@
+# Deployment
+
+[x] Kill digitalocean apps
+[x] reimport database
+[x] Upgrade heroku plan
+
+# General
+
 [x] Doneexercise should store sets, reps and weight for historic data
 [x] Adding an exercise should not update the 'exercise'. It should instead be
     possible to update it directly
@@ -15,10 +23,10 @@
 [x] add-exercise and update-exercise is now specific to weightlift. It needs to
     adapted. Probably use the exercise type here.
 [x] Add squash opponent through user interface
-[ ] Use time strings eg 3m45s instead of raw integers in UI.
+[x] Use time strings eg 3m45s instead of raw integers in UI.
     [x] util/duration-str->int
     [x] util/int->duration-str
-    [ ] Write a migration from ints to duration str in database
+    [x] Write a migration from ints to duration str in database
         [x] Move old duration column name to duration2
         [x] create new column named duration
         [x] Do migration
@@ -31,14 +39,13 @@
 [x] When adding plan, cardios do not get added
 [x] http call to handler does not work
 
+[ ] Should be possible to update the weights directly in /save-plan
+    [ ] Add a function increment that always increments a weight/cardio acc.
+        to a specific rule
+    [ ] Add this to /save-plan interface
 [ ] calls to db module should only be done in handler (program entry)
 [ ] Generate training graphs from squash-results or maybe statistics statistics
 [ ] Shold not be able to add the same exercise to plan
 [ ] Send email to ask for current plan
 [ ] Send email for update
 
-# Deployment
-
-[x] Kill digitalocean apps
-[x] reimport database
-[x] Upgrade heroku plan

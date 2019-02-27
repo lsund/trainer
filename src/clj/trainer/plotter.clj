@@ -94,7 +94,7 @@ plot 'data/%s.csv' using 1:2 t \"%s\" lw 5"
     (write-csv data uuid)
     (spit (str "data/" uuid ".gnuplot")
           (make-gnuplot-template {:uuid uuid
-                                  :title (:name (db/element db etype eid))
+                                  :title (:name (db/row db etype eid))
                                   :ylabel ylabel
                                   :x-range (db/value-span db
                                                           (keyword (str "done" (name etype))) :day eid)

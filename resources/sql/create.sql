@@ -21,7 +21,9 @@ CREATE TABLE WeightLift
     name            varchar(64) NOT NULL UNIQUE,
     sets            INT NOT NULL,
     reps            INT NOT NULL,
-    weight          INT NOT NULL
+    weight          INT NOT NULL,
+    highreps        BOOLEAN NOT NULL,
+    delta           INT NOT NULL
 );
 
 CREATE TABLE Plan

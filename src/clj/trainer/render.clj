@@ -64,6 +64,10 @@
   [:td [:input {:name (str (exercise-type->id etype) "_" (:exerciseid e) "_skip")
                 :type :checkbox}]])
 
+(defn- increment-weight [e etype]
+  [:td [:input {:name (str (exercise-type->id etype) "_" (:exerciseid e) "_increment")
+                :type :checkbox}]])
+
 (defn complete-plan [{:keys [id] :as params}]
   (html5
    [:head
@@ -75,12 +79,13 @@
              [:table
               (html/cardio-tablehead "Skip?")
               (html/cardio-tablebody save-instance-field
-                                     skip-optionally
+                                     [skip-optionally]
                                      (get (:cardios-for-plans params) id))]
              [:table
-              (html/weightlift-tablehead "Skip?")
+              (html/weightlift-tablehead "Skip?" "Increment?")
               (html/weightlift-tablebody save-instance-field
-                                         skip-optionally
+                                         [skip-optionally
+                                          increment-weight]
                                          (get (:weightlifts-for-plans params) id))]
              [:input {:type :submit :value "Save plan"}])]))
 
@@ -109,11 +114,11 @@
                   (when cardios
                     [:table
                      (html/cardio-tablehead)
-                     (html/cardio-tablebody value-or-na const-nil cardios)])
+                     (html/cardio-tablebody value-or-na [const-nil] cardios)])
                   (when weightlifts
                     [:table
                      (html/weightlift-tablehead)
-                     (html/weightlift-tablebody value-or-na const-nil weightlifts)])])))]))
+                     (html/weightlift-tablebody value-or-na [const-nil] weightlifts)])])))]))
 
 (defn squash [config params]
   (layout config
