@@ -38,14 +38,13 @@
 [x] Bug in update duration.
 [x] When adding plan, cardios do not get added
 [x] http call to handler does not work
-
-[ ] Should be possible to update the weights directly in /save-plan
-    [ ] Add a function increment that always increments a weight/cardio acc.
+[x] Should be possible to update the weights directly in /save-plan
+    [x] Add a function increment that always increments a weight/cardio acc.
         to a specific rule
-    [ ] Add this to /save-plan interface
+    [x] Add this to /save-plan interface
+
 [ ] calls to db module should only be done in handler (program entry)
 [ ] Generate training graphs from squash-results or maybe statistics statistics
 [ ] Shold not be able to add the same exercise to plan
 [ ] Send email to ask for current plan
 [ ] Send email for update
-

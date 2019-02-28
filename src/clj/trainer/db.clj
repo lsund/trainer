@@ -81,6 +81,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Update
 
+(defn update-row [db table update-map id]
+  (jdbc/update! db table update-map ["id=?" id]))
+
 (defmulti nudge-weight
   (fn [_ op _] op))
 
@@ -101,9 +104,6 @@
                       :weight (- weight delta)}
                      {:reps (dec reps)})]
     (update-row db :weightlift update-map id)))
-
-(defn update-row [db table update-map id]
-  (jdbc/update! db table update-map ["id=?" id]))
 
 (defn increment-plan-completed-count [db id]
   (jdbc/execute! db ["update plan set timescompleted = timescompleted + 1 WHERE id = ?" id]))
