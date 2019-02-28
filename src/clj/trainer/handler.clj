@@ -53,7 +53,9 @@
                 (merge {:day day
                         :planid planid
                         :exerciseid (:id e)}
-                       (select-keys e [:sets :reps :weight])))))
+                       (select-keys e [:sets :reps :weight])))
+        (cond (:increment e) (db/nudge-weight db :inc (db/row db :weightlift (:id e)))
+              (:decrement e) (db/nudge-weight db :dec (db/row db :weightlift (:id e))))))
     (doseq [cardio cardios]
       (when-not (:skip cardio)
         (db/add db

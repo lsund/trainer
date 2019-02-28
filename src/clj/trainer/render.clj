@@ -68,6 +68,10 @@
   [:td [:input {:name (str (exercise-type->id etype) "_" (:exerciseid e) "_increment")
                 :type :checkbox}]])
 
+(defn- decrement-weight [e etype]
+  [:td [:input {:name (str (exercise-type->id etype) "_" (:exerciseid e) "_decrement")
+                :type :checkbox}]])
+
 (defn complete-plan [{:keys [id] :as params}]
   (html5
    [:head
@@ -82,10 +86,11 @@
                                      [skip-optionally]
                                      (get (:cardios-for-plans params) id))]
              [:table
-              (html/weightlift-tablehead "Skip?" "Increment?")
+              (html/weightlift-tablehead "Skip?" "Increment?" "Decrement?")
               (html/weightlift-tablebody save-instance-field
                                          [skip-optionally
-                                          increment-weight]
+                                          increment-weight
+                                          decrement-weight]
                                          (get (:weightlifts-for-plans params) id))]
              [:input {:type :submit :value "Save plan"}])]))
 
