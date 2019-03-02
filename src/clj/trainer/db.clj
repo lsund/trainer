@@ -13,6 +13,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Make DB Spec
 
+;; Heroku DB Spec
 (def db-uri
   (java.net.URI. (or
                   (env :heroku-postgresql-olive-url)
@@ -33,6 +34,7 @@
                (format "//%s%s" (.getHost db-uri) (.getPath db-uri))
                (format "//%s:%s%s" (.getHost db-uri) (.getPort db-uri) (.getPath db-uri)))}))
 
+;; Local DB Spec
 (defn pg-db [config]
   {:dbtype "postgresql"
    :dbname (:name config)

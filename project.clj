@@ -47,10 +47,8 @@
                                :main trainer.core
                                :optimizations :advanced
                                :pretty-print false}}]}
-  :figwheel
-  {:css-dirs ["resources/public/css"]}
-  :repl-options
-  {:init-ns user}
+  :figwheel {:css-dirs ["resources/public/css"]}
+  :repl-options {:init-ns user}
   :profiles {:production {:env {:production true}}
              :dev {:dependencies  [[binaryage/devtools "0.9.9"]
                                    [figwheel-sidecar "0.5.15"]
