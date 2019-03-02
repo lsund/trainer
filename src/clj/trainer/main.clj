@@ -1,5 +1,5 @@
 (ns trainer.main
-  "Namespace for running the program once"
+  "Main entry point"
   (:require
    [trainer.config :as config]
    [trainer.core :refer [new-system]]
