@@ -147,11 +147,11 @@
                              [:th "Day"]
                              [:th "Opponent"]
                              [:th "---"]
-                             [:th " "]])
+                             [:th " "]] [])
             (html/tablebody [:day :name :myscore :opponentscore]
                             nil
                             const
-                            const-nil
+                            [const-nil]
                             (:results params))]]))
 
 (defn- maybe-regenerate-plot [db eid etype fst snd]
