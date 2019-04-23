@@ -5,12 +5,11 @@
 
 (defn stringify [k] (-> k name s/capitalize))
 
-(defn parse-int [x]
-  (cond
-    (= (type x) java.lang.Integer) x
-    (= (type x) java.lang.String) (try (Integer. (re-find #"\d+" x))
-                                       (catch NumberFormatException _ nil))
-    :default nil))
+(defn parse-int [s]
+  {:pre [(re-matches #"-?\d+" s)]}
+  (if (integer? s)
+    s
+    (Integer/parseInt s)))
 
 (def ^:private date-string "yyyy-MM-dd")
 

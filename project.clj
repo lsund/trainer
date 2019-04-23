@@ -35,8 +35,8 @@
                 :source-paths ["src/cljs"]
                 :figwheel {:on-jsload "trainer.core/on-js-reload"
                            :open-urls ["http://localhost:3449/index.html"]}
-                :compiler {:main                 trainer.core
-                           :asset-path           "js/compiled/out"
+                :compiler {:main trainer.core
+                           :asset-path "js/compiled/out"
                            :output-to "resources/public/js/compiled/trainer.js"
                            :output-dir "resources/public/js/compiled/out"
                            :source-map-timestamp true
@@ -48,7 +48,8 @@
                                :optimizations :advanced
                                :pretty-print false}}]}
   :figwheel {:css-dirs ["resources/public/css"]}
-  :repl-options {:init-ns user}
+  :repl-options {:init-ns user
+                 :timeout 120000}
   :profiles {:production {:env {:production true}}
              :dev {:dependencies  [[binaryage/devtools "0.9.9"]
                                    [figwheel-sidecar "0.5.15"]
