@@ -52,9 +52,7 @@
                  :timeout 120000}
   :profiles {:production {:env {:production true}}
              :dev {:dependencies  [[binaryage/devtools "0.9.9"]
-                                   [figwheel-sidecar "0.5.15"]
-                                   [com.cemerick/piggieback "0.2.2"]]
+                                   [figwheel-sidecar "0.5.15"]]
                    :source-paths  ["src/clj" "src/cljs" "dev"]
-                   :repl-options  {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
                    :clean-targets ^{:protect false} ["resources/public/js/compiled"
                                                      :target-path]}})
