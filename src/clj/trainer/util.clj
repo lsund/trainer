@@ -6,7 +6,7 @@
 (defn stringify [k] (-> k name s/capitalize))
 
 (defn parse-int [s]
-  {:pre [(re-matches #"-?\d+" s)]}
+  {:pre [(or (integer? s) (re-matches #"-?\d+" s))]}
   (if (integer? s)
     s
     (Integer/parseInt s)))

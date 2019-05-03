@@ -53,10 +53,10 @@
       (= :duration k) [:input {:name tag
                                :type :text
                                :value v}]
-      (util/parse-int v) [:input {:name tag
-                                  :type :number
-                                  :value v
-                                  :min "0"}]
+      (integer? v) [:input {:name tag
+                            :type :number
+                            :value v
+                            :min "0"}]
       (nil? v) "N/A"
       :default v)))
 
