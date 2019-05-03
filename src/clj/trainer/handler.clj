@@ -117,11 +117,11 @@
          (redirect "/"))
    (POST "/add-cardio" [name duration distance highpulse lowpulse level type]
          (db/add db :cardio {:name name
-                             :duration (util/parse-int duration)
-                             :distance (util/parse-int distance)
-                             :highpulse (util/parse-int highpulse)
-                             :lowpulse (util/parse-int lowpulse)
-                             :level (util/parse-int level)})
+                             :duration (util/parse-int-or-nil duration)
+                             :distance (util/parse-int-or-nil distance)
+                             :highpulse (util/parse-int-or-nil highpulse)
+                             :lowpulse (util/parse-int-or-nil lowpulse)
+                             :level (util/parse-int-or-nil level)})
          (redirect "/"))
    (POST "/update-weightlift" [id sets reps weight]
          (db/update-row db :weightlift {:sets (util/parse-int sets)
@@ -130,10 +130,10 @@
          (redirect "/"))
    (POST "/update-cardio" [id duration distance highpulse lowpulse level]
          (db/update-row db :cardio     {:duration duration
-                                        :distance (util/parse-int distance)
-                                        :highpulse (util/parse-int highpulse)
-                                        :lowpulse (util/parse-int lowpulse)
-                                        :level (util/parse-int level)} (util/parse-int id))
+                                        :distance (util/parse-int-or-nil distance)
+                                        :highpulse (util/parse-int-or-nil highpulse)
+                                        :lowpulse (util/parse-int-or-nil lowpulse)
+                                        :level (util/parse-int-or-nil level)} (util/parse-int id))
          (redirect "/"))
    (POST "/add-weightlift-to-plan" {:keys [session params]}
          (let [weightlifts (:weightlift-list session [])

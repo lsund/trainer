@@ -11,6 +11,12 @@
     s
     (Integer/parseInt s)))
 
+(defn parse-int-or-nil [s]
+  (if (integer? s)
+    s
+    (when (re-matches #"-?\d+" s)
+      (Integer/parseInt s))))
+
 (def ^:private date-string "yyyy-MM-dd")
 
 (defn string->localdate [s]
