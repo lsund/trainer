@@ -212,6 +212,13 @@
   (layout config
           "Overview"
           [:div
+           (form-to [:get "/complete-plan"]
+                    [:select {:name "plan"}
+                     (for [e (:plans params)]
+                       [:option {:value (:id e)} (:name e)])]
+                    [:button.mui-btn "Start"])
+           [:h2 "Active plans"]
+           (active-plans params)
            [:h2 "Add cardio or weightlift exercises"]
            (html/add-exercise-form :weightlift [:sets :reps :weight])
            (html/add-exercise-form :cardio [:duration :distance :highpulse :lowpulse :level])
@@ -233,11 +240,4 @@
            (form-to [:post "/save-plan"]
                     [:input {:name "name" :type :text :placeholder "Plan name"}]
                     [:button.mui-btn "Save plan"])
-           [:h3 "Complete a plan"]
-           (form-to [:get "/complete-plan"]
-                    [:select {:name "plan"}
-                     (for [e (:plans params)]
-                       [:option {:value (:id e)} (:name e)])]
-                    [:button.mui-btn "Start"])
-           [:h2 "Active plans"]
-           (active-plans params)]))
+           [:h3 "Complete a plan"]]))
