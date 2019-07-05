@@ -2,6 +2,7 @@
   "Namespace for database interfacing"
   (:import com.mchange.v2.c3p0.ComboPooledDataSource)
   (:require [clojure.java.jdbc :as jdbc]
+            [medley.core :refer [map-vals]]
             [clojure.string :as string]
             [com.stuartsierra.component :as c]
             [taoensso.timbre :as timbre]
@@ -212,3 +213,21 @@
   (let [table (if (some #{column} [:sets :reps :weight]) "doneweightlift" "donecardio")]
     (println column table exerciseid)
     (jdbc/query db [(str "SELECT day," (name column) " FROM " table " WHERE exerciseid = ?")  exerciseid])))
+
+(defn squash-statistics
+  ([db]
+   (squash-statistics db nil))
+  ([db opponent-id]
+   (let [sql
+         (if opponent-id
+           ["SELECT myscore,opponentscore FROM squashresult WHERE opponentid=?"
+            opponent-id]
+           ["SELECT myscore,opponentscore FROM squashresult"])
+         results (jdbc/query db sql)
+         compare-score-by #(fn [{:keys [myscore opponentscore]}]
+                             (% myscore opponentscore))
+         won (filter (compare-score-by >) results)
+         lost (filter (compare-score-by <) results)
+         draw (filter (compare-score-by =)
+                      results)]
+     (map-vals count {:won won :draw draw :lost lost}))))
