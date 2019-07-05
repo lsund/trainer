@@ -18,7 +18,7 @@
    [:body.mui-container
     (html/navbar)
     content
-    (apply include-css ["/css/style.css" "//cdn.muicss.com/mui-0.9.41/css/mui.min.css"])
+    (apply include-css ["/css/style.css" "/css/mui.css"])
     (apply include-js (:javascripts config))]))
 
 (defn- active-plans [params]
@@ -125,10 +125,14 @@
                      (html/weightlift-tablehead)
                      (html/weightlift-tablebody value-or-na [const-nil] weightlifts)])])))]))
 
-(defn squash [config params]
+(defn squash [config {:keys [statistics] :as params}]
   (layout config
           "Squash"
           [:div
+           [:h3 "Statistics"]
+           [:p (str "Wins: " (:wins statistics))]
+           [:p (str "Losses: " (:losses statistics))]
+           [:p (str "Draws: " (:draws statistics))]
            [:h3 "Add Squash Opponent"]
            (form-to [:post "/add-squash-opponent"]
                     [:input {:name "name" :type :text}]

@@ -225,9 +225,7 @@
            ["SELECT myscore,opponentscore FROM squashresult"])
          results (jdbc/query db sql)
          compare-score-by #(fn [{:keys [myscore opponentscore]}]
-                             (% myscore opponentscore))
-         won (filter (compare-score-by >) results)
-         lost (filter (compare-score-by <) results)
-         draw (filter (compare-score-by =)
-                      results)]
-     (map-vals count {:won won :draw draw :lost lost}))))
+                             (% myscore opponentscore))]
+     (map-vals count {:wins (filter (compare-score-by >) results)
+                      :draws (filter (compare-score-by <) results)
+                      :losses (filter (compare-score-by =) results)}))))
