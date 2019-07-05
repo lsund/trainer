@@ -242,5 +242,5 @@
          compare-score-by #(fn [{:keys [myscore opponentscore]}]
                              (% myscore opponentscore))]
      (map-vals count {:wins (filter (compare-score-by >) results)
-                      :draws (filter (compare-score-by <) results)
-                      :losses (filter (compare-score-by =) results)}))))
+                      :losses (filter (compare-score-by <) results)
+                      :draws (filter (compare-score-by =) results)}))))

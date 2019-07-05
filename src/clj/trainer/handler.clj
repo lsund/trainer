@@ -40,11 +40,15 @@
 (defn save-plan-instance [db params]
   (let [planid (-> params :plan util/parse-int)
         day (util/->localdate (:day params))
-        weightlifts (for [[id props] (group-by :id (for [p (filter is-weightlift-property params)]
-                                                     (process-exercise-property p)))]
+        weightlifts (for [[id props]
+                          (group-by :id (for [p (filter is-weightlift-property
+                                                        params)]
+                                          (process-exercise-property p)))]
                       (make-exercise id props))
-        cardios (for [[id props] (group-by :id (for [p (filter is-cardio-property params)]
-                                                 (process-exercise-property p)))]
+        cardios (for [[id props] (group-by :id
+                                           (for [p (filter is-cardio-property
+                                                           params)]
+                                             (process-exercise-property p)))]
                   (make-exercise id props))]
     (doseq [e weightlifts]
       (when-not (:skip e)
@@ -54,8 +58,12 @@
                         :planid planid
                         :exerciseid (:id e)}
                        (select-keys e [:sets :reps :weight])))
-        (cond (:increment e) (db/nudge-weight db :inc (db/row db :weightlift (:id e)))
-              (:decrement e) (db/nudge-weight db :dec (db/row db :weightlift (:id e))))))
+        (cond (:increment e) (db/nudge-weight db
+                                              :inc
+                                              (db/row db :weightlift (:id e)))
+              (:decrement e) (db/nudge-weight db
+                                              :dec
+                                              (db/row db :weightlift (:id e))))))
     (doseq [cardio cardios]
       (when-not (:skip cardio)
         (db/add db
@@ -63,7 +71,12 @@
                 (merge {:day day
                         :planid planid
                         :exerciseid (:id cardio)}
-                       (select-keys cardio [:duration :distance :highpulse :lowpulse :level])))))
+                       (select-keys cardio
+                                    [:duration
+                                     :distance
+                                     :highpulse
+                                     :lowpulse
+                                     :level])))))
     (db/increment-plan-completed-count db planid)))
 
 (defn- increment-goal-task []
