@@ -50,7 +50,11 @@
    (for [e es]
      [:tr
       (for [[k v] (select-keys e keyseq)]
-        [:td (apply f [[k v] (:exerciseid e) etype])])
+        [:td (apply f [[k v]
+                       (if (:exerciseid e)
+                         (:exerciseid e)
+                         (:opponentid e))
+                       etype])])
       (for [f end-fs]
         (f e etype))])])
 

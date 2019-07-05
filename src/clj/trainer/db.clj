@@ -190,16 +190,31 @@
                   INNER JOIN plan
                   ON plan.id = planid")]))
 
-(defn squash-results [db]
-  (jdbc/query db
-              ["SELECT name,
-                    squashresult.day,
-                    squashresult.myscore,
-                    squashresult.opponentscore
-             FROM squashresult
-             INNER JOIN squashopponent
-             ON squashresult.opponentid = squashopponent.id
-             ORDER BY day DESC"]))
+(defn squash-results
+  ([db]
+   (squash-results db nil))
+  ([db id]
+   (let [sql (if id
+               ["SELECT name,
+                           squashresult.day,
+                           squashresult.myscore,
+                           squashresult.opponentscore,
+                           squashresult.opponentid
+                   FROM squashresult
+                   INNER JOIN squashopponent
+                   ON squashresult.opponentid = squashopponent.id
+                   AND squashresult.opponentid = ?
+                   ORDER BY day DESC" id]
+               ["SELECT name,
+                           squashresult.day,
+                           squashresult.myscore,
+                           squashresult.opponentscore,
+                           squashresult.opponentid
+                   FROM squashresult
+                   INNER JOIN squashopponent
+                   ON squashresult.opponentid = squashopponent.id
+                   ORDER BY day DESC"])]
+     (jdbc/query db sql))))
 
 (defn active-plans [db]
   (jdbc/query db ["select * from plan where active = 't' order by timescompleted asc"]))

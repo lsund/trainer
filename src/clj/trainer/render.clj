@@ -125,6 +125,12 @@
                      (html/weightlift-tablehead)
                      (html/weightlift-tablebody value-or-na [const-nil] weightlifts)])])))]))
 
+(defn link-if-name [[k v] id _]
+  (cond
+    (= k :name) [:a {:href (str "/squash-opponent?id=" id)} v]
+    (= k :opponentid) nil
+    :otherwise v))
+
 (defn squash [config {:keys [statistics] :as params}]
   (layout config
           "Squash"
@@ -150,7 +156,27 @@
             (html/tablehead [:tr
                              [:th "Day"]
                              [:th "Opponent"]
-                             [:th "---"]
+                             [:th "Score"]
+                             [:th " "]] [])
+            (html/tablebody [:day :name :myscore :opponentscore :opponentid]
+                            nil
+                            link-if-name
+                            [const-nil]
+                            (:results params))]]))
+
+(defn squash-opponent [config {:keys [statistics] :as params}]
+  (layout config
+          "Squash"
+          [:div
+           [:h3 "Statistics"]
+           [:p (str "Wins: " (:wins statistics))]
+           [:p (str "Losses: " (:losses statistics))]
+           [:p (str "Draws: " (:draws statistics))]
+           [:table
+            (html/tablehead [:tr
+                             [:th "Day"]
+                             [:th "Opponent"]
+                             [:th "Score"]
                              [:th " "]] [])
             (html/tablebody [:day :name :myscore :opponentscore]
                             nil

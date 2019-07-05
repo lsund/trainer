@@ -104,6 +104,13 @@
         (render/squash config {:statistics (db/squash-statistics db nil)
                                :opponents (sort-by :name (db/all db :squashopponent))
                                :results (db/squash-results db)}))
+   (GET "/squash-opponent" [id]
+        (render/squash-opponent config
+                                {:statistics
+                                 (db/squash-statistics db (util/parse-int id))
+
+                                 :results
+                                 (db/squash-results db (util/parse-int id))}))
    (GET "/plot/:etype" [eid fst snd etype]
         (render/plot (keyword etype)
                      config
