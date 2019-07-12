@@ -18,7 +18,7 @@
    [:body.mui-container
     (html/navbar)
     content
-    (apply include-css ["/css/style.css" "/css/mui.css"])]))
+    (apply include-css (:styles config))]))
 
 (defn- active-plans [params]
   [:ul

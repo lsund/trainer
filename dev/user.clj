@@ -6,7 +6,7 @@
    [trainer.core :refer [new-system]]
    ,,,))
 
-(defn new-dev-system [] (new-system (config/load)))
+(defn new-dev-system [] (new-system (config/load-local)))
 
 (defonce system nil)
 
