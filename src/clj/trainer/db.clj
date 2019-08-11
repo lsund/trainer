@@ -244,3 +244,26 @@
      (map-vals count {:wins (filter (compare-score-by >) results)
                       :losses (filter (compare-score-by <) results)
                       :draws (filter (compare-score-by =) results)}))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; serialize
+
+(defn serialize-done-weightlift [db]
+  (->>
+   (jdbc/query db ["select doneweightlift.day, doneweightlift.sets,
+                   doneweightlift.reps, doneweightlift.weight,
+                   weightlift.name from doneweightlift inner join
+                   weightlift on weightlift.id = doneweightlift.exerciseid;"])
+   (apply list)
+   (spit "/home/lsund/test.edn")))
+
+(defn serialize-done-cardio [db]
+  (->>
+   (jdbc/query db ["select donecardio.day, donecardio.duration,
+                   donecardio.distance, donecardio.highpulse,
+                   donecardio.lowpulse, donecardio.level,
+                   cardio.name from donecardio inner join
+                   cardio on cardio.id = donecardio.exerciseid;"])
+   (apply list)
+   (spit "/home/lsund/test.edn")))
