@@ -2,9 +2,8 @@
   "Namespace for rendering views"
   (:require
    [trainer.db :as db]
-   [taoensso.timbre :as logging]
    [hiccup.form :refer [form-to]]
-   [hiccup.page :refer [html5 include-css include-js]]
+   [hiccup.page :refer [html5 include-css]]
    [trainer.util :as util]
    [trainer.html :as html]
    [trainer.plotter :as plotter]
@@ -57,7 +56,7 @@
                             :value v
                             :min "0"}]
       (nil? v) "N/A"
-      :default v)))
+      :else v)))
 
 (defn- skip-optionally [e etype]
   [:td [:input {:name (str (exercise-type->id etype) "_" (:exerciseid e) "_skip")
@@ -128,16 +127,23 @@
   (cond
     (= k :name) [:a {:href (str "/squash-opponent?id=" id)} v]
     (= k :opponentid) nil
-    :otherwise v))
+    :else v))
 
 (defn squash [config {:keys [statistics] :as params}]
   (layout config
           "Squash"
           [:div
-           [:h3 "Statistics"]
-           [:p (str "Wins: " (:wins statistics))]
-           [:p (str "Losses: " (:losses statistics))]
-           [:p (str "Draws: " (:draws statistics))]
+           [:div
+            [:h3 "Records"]
+            [:p "Figure of 8s: 15"]]
+           [:div
+            [:h3 "Statistics"]
+            [:p (str "Wins: " (:wins statistics))]
+            [:p (str "Losses: " (:losses statistics))]
+            [:p (str "Draws: " (:draws statistics))]
+            [:p (str "Win ratio: " (/ (float (:wins statistics))
+                                      (float (+ (:wins statistics)
+                                                (:losses statistics)))))]]
            [:h3 "Add Squash Opponent"]
            (form-to [:post "/add-squash-opponent"]
                     [:input {:name "name" :type :text}]
@@ -167,10 +173,13 @@
   (layout config
           "Squash"
           [:div
-           [:h3 "Statistics"]
-           [:p (str "Wins: " (:wins statistics))]
-           [:p (str "Losses: " (:losses statistics))]
-           [:p (str "Draws: " (:draws statistics))]
+           [:div
+            [:h3 "Statistics"]
+            [:p (str "Wins: " (:wins statistics))]
+            [:p (str "Losses: " (:losses statistics))]
+            [:p (str "Draws: " (:draws statistics))]
+            [:p (str "Win ratio: " (/ (float (:wins statistics))
+                                      (float (+ (:wins statistics) (:losses statistics)))))]]
            [:table
             (html/tablehead [:tr
                              [:th "Day"]
@@ -190,7 +199,7 @@
                (and use-fst use-snd) :both
                use-fst :fst
                use-snd :snd
-               :default :none)]
+               :else :none)]
     (when (not= mode :none)
       (plotter/generate
        {:db db
