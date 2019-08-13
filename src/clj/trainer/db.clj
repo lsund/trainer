@@ -255,8 +255,7 @@
                    doneweightlift.reps, doneweightlift.weight,
                    weightlift.name from doneweightlift inner join
                    weightlift on weightlift.id = doneweightlift.exerciseid;"])
-   (apply vector)
-   str))
+   (apply vector)))
 
 (defn export-done-cardio [db]
   (->>
@@ -265,12 +264,10 @@
                    donecardio.lowpulse, donecardio.level,
                    cardio.name from donecardio inner join
                    cardio on cardio.id = donecardio.exerciseid;"])
-   (apply vector)
-   str))
+   (apply vector)))
 
 (defn export-squash-result [db]
   (->> (jdbc/query db ["select squashresult.day, squashresult.myscore,
                         squashresult.opponentscore, squashopponent.name
                         from squashresult inner join squashopponent on squashresult.opponentid = squashopponent.id"])
-       (apply vector)
-       str))
+       (apply vector)))

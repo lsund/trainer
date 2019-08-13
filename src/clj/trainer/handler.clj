@@ -2,6 +2,7 @@
   "Namespace for handling routes"
   (:require [clj-http.client :as client]
             [clojure.string :as string]
+            [cheshire.core :refer [generate-string]]
             [compojure.core :refer [GET POST routes]]
             [compojure.route :as route]
             [taoensso.timbre :as logging]
@@ -195,11 +196,11 @@
          (redirect "/squash"))
    (route/resources "/")
    (GET "/export-squash-result" []
-        (db/export-squash-result db))
+        (generate-string (db/export-squash-result db)))
    (GET "/export-done-cardio" []
-        (db/export-done-cardio db))
+        (generate-string (db/export-done-cardio db)))
    (GET "/export-done-weightlift" []
-        (db/export-done-weightlift db))
+        (generate-string (db/export-done-weightlift db)))
 
    (route/not-found render/not-found)))
 

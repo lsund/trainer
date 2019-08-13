@@ -12,6 +12,7 @@
                  [org.postgresql/postgresql "42.2.2"]
                  [http-kit "2.2.0"]
                  [clj-http "3.9.1"]
+                 [cheshire "5.9.0"]
                  [com.stuartsierra/component "0.4.0"]
                  [ring/ring-defaults "0.3.0"]
                  [compojure "1.6.1"]
