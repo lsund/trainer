@@ -249,28 +249,28 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; serialize
 
-(defn serialize-done-weightlift [db]
+(defn export-done-weightlift [db]
   (->>
    (jdbc/query db ["select doneweightlift.day, doneweightlift.sets,
                    doneweightlift.reps, doneweightlift.weight,
                    weightlift.name from doneweightlift inner join
                    weightlift on weightlift.id = doneweightlift.exerciseid;"])
-   (apply list)
-   (spit "weights.edn")))
+   (apply vector)
+   str))
 
-(defn serialize-done-cardio [db]
+(defn export-done-cardio [db]
   (->>
    (jdbc/query db ["select donecardio.day, donecardio.duration,
                    donecardio.distance, donecardio.highpulse,
                    donecardio.lowpulse, donecardio.level,
                    cardio.name from donecardio inner join
                    cardio on cardio.id = donecardio.exerciseid;"])
-   (apply list)
-   (spit "cardios.edn")))
+   (apply vector)
+   str))
 
-(defn serialize-squash-result [db]
+(defn export-squash-result [db]
   (->> (jdbc/query db ["select squashresult.day, squashresult.myscore,
                         squashresult.opponentscore, squashopponent.name
                         from squashresult inner join squashopponent on squashresult.opponentid = squashopponent.id"])
-       (apply list)
-       (spit "squashes.edn")))
+       (apply vector)
+       str))

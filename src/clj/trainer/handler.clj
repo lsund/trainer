@@ -194,6 +194,13 @@
                  {:name name})
          (redirect "/squash"))
    (route/resources "/")
+   (GET "/export-squash-result" []
+        (db/export-squash-result db))
+   (GET "/export-done-cardio" []
+        (db/export-done-cardio db))
+   (GET "/export-done-weightlift" []
+        (db/export-done-weightlift db))
+
    (route/not-found render/not-found)))
 
 (defn new-handler
