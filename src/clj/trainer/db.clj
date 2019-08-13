@@ -256,7 +256,7 @@
                    weightlift.name from doneweightlift inner join
                    weightlift on weightlift.id = doneweightlift.exerciseid;"])
    (apply list)
-   (spit "/home/lsund/test.edn")))
+   (spit "weights.edn")))
 
 (defn serialize-done-cardio [db]
   (->>
@@ -266,11 +266,11 @@
                    cardio.name from donecardio inner join
                    cardio on cardio.id = donecardio.exerciseid;"])
    (apply list)
-   (spit "/home/lsund/test.edn")))
+   (spit "cardios.edn")))
 
 (defn serialize-squash-result [db]
   (->> (jdbc/query db ["select squashresult.day, squashresult.myscore,
                         squashresult.opponentscore, squashopponent.name
                         from squashresult inner join squashopponent on squashresult.opponentid = squashopponent.id"])
        (apply list)
-       (spit "/home/lsund/test.edn")))
+       (spit "squashes.edn")))
